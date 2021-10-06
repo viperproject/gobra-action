@@ -39,8 +39,8 @@ echo "::set-output name=time::$TIME_PASSED"
 echo "::set-output name=numberOfPackages::$NUMBER_OF_PACKAGES_VERIFIED"
 echo "::set-output name=numberOfFailedPackages::$NUMBER_OF_FAILED_PACKAGE_VERIFICATIONS"
 echo "::set-output name=numberOfTimedoutPackages::$NUMBER_OF_TIMEOUT_PACKAGE_VERIFICATIONS"
-echo "::set-output name=numberOfMethods::0"
-echo "::set-output name=numberOfAssumptions::0"
-echo "::set-output name=numberOfDependingMethods::0"
+echo "::set-output name=numberOfMethods::0" # TODO: implement
+echo "::set-output name=numberOfAssumptions::0" # TODO: implement
+echo "::set-output name=numberOfDependingMethods::0" # TODO: implement
 
 exit $EXIT_CODE

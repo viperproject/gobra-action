@@ -14,10 +14,10 @@ do
             echo -e "${GREEN} $gobraPackage successfully verified${RESET}"
         else
 	    if [ $? -eq 124 ]; then
-	      	NUMBER_OF_FAILED_PACKAGE_VERIFICATIONS=$[ $NUMBER_OF_FAILED_PACKAGE_VERIFICATIONS+1 ]
+		NUMBER_OF_TIMEOUT_PACKAGE_VERIFICATIONS=$[ $NUMBER_OF_TIMEOUT_PACKAGE_VERIFICATIONS+1 ]
 		echo -e "${RED}Verification of package $gobraPackage timed out${RESET}"
 	    else
-		NUMBER_OF_TIMEOUT_PACKAGE_VERIFICATIONS=$[ $NUMBER_OF_TIMEOUT_PACKAGE_VERIFICATIONS+1 ]
+	      	NUMBER_OF_FAILED_PACKAGE_VERIFICATIONS=$[ $NUMBER_OF_FAILED_PACKAGE_VERIFICATIONS+1 ]
 		echo -e "${RED}Verification error in package $gobraPackage${RESET}"
 	    fi
 	    RESULT=$[ $RESULT+1 ]
