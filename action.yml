@@ -13,6 +13,9 @@ inputs:
     description: 'Subdirectory of the project location in which the package base is located'
     required: true
     default: ""
+  packages:
+    description: 'Names of packages to verify, all packages are verified by default'
+    required: false
   javaXss:
     description: 'Java stack size'
     required: true
@@ -49,6 +52,10 @@ runs:
   image: 'Dockerfile'
   args:
     - ${{ inputs.caching }}
+    - ${{ inputs.projectLocation }}
+    - ${{ inputs.packageLocation }}
+    - ${{ inputs.packages }}
+    - ${{ inputs.javaXss }}
     - ${{ inputs.javaXss }}
     - ${{ inputs.javaXmx }}
     - ${{ inputs.globalTimeout }}

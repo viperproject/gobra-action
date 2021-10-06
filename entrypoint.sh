@@ -9,13 +9,6 @@ export PACKAGE_LOCATION="$PROJECT_LOCATION/$INPUT_PACKAGELOCATION"
 export GOBRA_JAR="/gobra/gobra.jar"
 
 START_TIME=$SECONDS
-
-if [ -n "$INPUT_PACKAGES" ]; then
-    export PACKAGES=$(echo -e $INPUT_PACKAGES | tr " " "\n" | sed  "s#.*#$PACKAGE_LOCATION/&#")
-else
-    export PACKAGES=$(find $PACKAGE_LOCATION -type d)
-fi
-
 EXIT_CODE=0
 
 if timeout "$INPUT_GLOBALTIMEOUT" ./verifyPackages.sh; then
