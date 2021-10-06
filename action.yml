@@ -1,0 +1,56 @@
+name: 'Gobra'
+description: 'Verify your Go project with s'
+inputs:
+  caching:
+    description: 'Enable caching of verification results'
+    required: true
+    default: 1
+  projectLocation:
+    description: 'Subirectory in which the project base is located'
+    required: true
+    default: ""
+  packageLocation:
+    description: 'Subdirectory of the project location in which the package base is located'
+    required: true
+    default: ""
+  javaXss:
+    description: 'Java stack size'
+    required: true
+    default: '128m'
+  javaXmx:
+    description: 'Java max heap size'
+    required: true
+    default: '256m'
+  globalTimeout:
+    description: 'Time till verification times out'
+    required: true
+    default: '3h'
+  packageTimeout:
+    description: 'Time till package verification times out'
+    required: true
+    default: '1h'   
+outputs:
+  time: # id of output
+    description: 'Total verification time'
+  numberOfPackages:
+    description: 'Number of packages verified'
+  numberOfFailedPackages:
+    description: 'Number of packages, where the verification failed'
+  numberOfPackages:
+    description: 'Number of packages, where the verification timed out'  
+  numberOfMethods:
+    description: 'Number of methods verified'
+  numberOfAssumptions:
+    description: 'Number of assumptions'
+  numberOfDependingMethods:
+    description: 'Number of methods depending on assumptions'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.caching }}
+    - ${{ inputs.javaXss }}
+    - ${{ inputs.javaXmx }}
+    - ${{ inputs.globalTimeout }}
+    - ${{ inputs.packageTimeout }}
+    
