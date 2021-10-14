@@ -8,6 +8,9 @@ export PROJECT_LOCATION="$GITHUB_WORKSPACE/$INPUT_PROJECTLOCATION"
 export PACKAGE_LOCATION="$PROJECT_LOCATION/$INPUT_PACKAGELOCATION"
 export GOBRA_JAR="/gobra/gobra.jar"
 
+echo "Verification for project in $PROJECT_LOCATION started"
+echo "Verifying packages located in $PACKAGE_LOCATION"
+
 START_TIME=$SECONDS
 EXIT_CODE=0
 
