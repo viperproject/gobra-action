@@ -4,10 +4,13 @@ export RED='\033[0;31m'
 export GREEN='\033[0;32m'
 export YELLOW='\033[1;33m'
 export RESET='\033[0m' # No Color
+
+
 if [ -n "$INPUT_PROJECTLOCATION" ]; then
     export PROJECT_LOCATION="$GITHUB_WORKSPACE/$INPUT_PROJECTLOCATION"
 else
-    export PROJECT_LOCATION="$GITHUB_WORKSPACE"
+    REPOSITORY_NAME=$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//")
+    export PROJECT_LOCATION="$GITHUB_WORKSPACE/$REPOSITORY_NAME"
 fi
 export PACKAGE_LOCATION="$PROJECT_LOCATION/$INPUT_PACKAGELOCATION"
 export GOBRA_JAR="/gobra/gobra.jar"
