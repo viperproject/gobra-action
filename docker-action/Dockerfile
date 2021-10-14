@@ -1,3 +1,5 @@
+ARG image_version=latest
+
 FROM ghcr.io/jogasser/gobra:${image_version}
 
 COPY entrypoint.sh /gobra/entrypoint.sh
