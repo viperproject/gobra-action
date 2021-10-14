@@ -11,7 +11,7 @@ export GOBRA_JAR="/gobra/gobra.jar"
 START_TIME=$SECONDS
 EXIT_CODE=0
 
-if timeout "$INPUT_GLOBALTIMEOUT" ./verifyPackages.sh; then
+if timeout "$INPUT_GLOBALTIMEOUT" /gobra/verifyPackages.sh; then
     echo -e "${GREEN}Verification completed successfully in${RESET}"
 else
     EXIT_CODE=$?
