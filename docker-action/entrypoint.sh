@@ -15,6 +15,8 @@ fi
 export PACKAGE_LOCATION="$PROJECT_LOCATION/$INPUT_PACKAGELOCATION"
 export GOBRA_JAR="/gobra/gobra.jar"
 
+echo $GITHUB_WORKSPACE/*
+
 echo "Verification for project in $PROJECT_LOCATION started"
 echo $PROJECT_LOCATION/*
 
