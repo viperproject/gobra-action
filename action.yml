@@ -54,13 +54,4 @@ outputs:
 runs:
   using: 'docker'
   image: 'Dockerfile'
-  args:
-    - ${{ inputs.caching }}
-    - ${{ inputs.projectLocation }}
-    - ${{ inputs.packageLocation }}
-    - ${{ inputs.packages }}
-    - ${{ inputs.javaXss }}
-    - ${{ inputs.javaXmx }}
-    - ${{ inputs.globalTimeout }}
-    - ${{ inputs.packageTimeout }}
     
