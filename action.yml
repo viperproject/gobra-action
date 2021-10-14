@@ -43,7 +43,7 @@ outputs:
     description: 'Number of packages verified'
   numberOfFailedPackages:
     description: 'Number of packages, where the verification failed'
-  numberOfPackages:
+  numberOfTimedoutPackages:
     description: 'Number of packages, where the verification timed out'  
   numberOfMethods:
     description: 'Number of methods verified'
