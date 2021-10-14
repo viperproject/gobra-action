@@ -1,10 +1,9 @@
-FROM ghcr.io/jogasser/gobra:latest
+FROM alpine:latest
 
-COPY entrypoint.sh /gobra/entrypoint.sh
-COPY verifyPackages.sh /gobra/verifyPackages.sh
+COPY docker-action /docker-action
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
-RUN chmod +x /gobra/entrypoint.sh && chmod +x /gobra/verifyPackages.sh
+RUN apk add --update --no-cache docker
 
-WORKDIR /gobra
-
-ENTRYPOINT ["/gobra/entrypoint.sh"]
+ENTRYPOINT ["/entrypoint.sh"]

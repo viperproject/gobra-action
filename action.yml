@@ -31,10 +31,14 @@ inputs:
   packageTimeout:
     description: 'Time till package verification times out'
     required: true
-    default: '1h'   
+    default: '1h'
+  imageVersion:
+    description: 'Which gobra docker image tack to use'
+    required: true
+    default: 'latest'
 outputs:
   time: # id of output
-    description: 'Total verification time'
+    description: 'Total verification time in seconds'
   numberOfPackages:
     description: 'Number of packages verified'
   numberOfFailedPackages:
@@ -55,7 +59,6 @@ runs:
     - ${{ inputs.projectLocation }}
     - ${{ inputs.packageLocation }}
     - ${{ inputs.packages }}
-    - ${{ inputs.javaXss }}
     - ${{ inputs.javaXss }}
     - ${{ inputs.javaXmx }}
     - ${{ inputs.globalTimeout }}

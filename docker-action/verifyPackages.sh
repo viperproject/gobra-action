@@ -1,5 +1,11 @@
 #!/bin/bash
 
+if [ -n "$INPUT_PACKAGES" ]; then
+    PACKAGES=$(echo -e $INPUT_PACKAGES | tr " " "\n" | sed  "s#.*#$PACKAGE_LOCATION/&#")
+else
+    PACKAGES=$(find $PACKAGE_LOCATION -type d)
+fi
+
 RESULT=0
 NUMBER_OF_PACKAGES_VERIFIED=0
 NUMBER_OF_FAILED_PACKAGE_VERIFICATIONS=0

@@ -1,39 +1,11 @@
 #!/bin/bash
 
-export RED='\033[0;31m'
-export GREEN='\033[0;32m'
-export YELLOW='\033[1;33m'
-export RESET='\033[0m' # No Color
-export PROJECT_LOCATION="$GITHUB_WORKSPACE/$INPUT_PROJECTLOCATION"
-export PACKAGE_LOCATION="$PROJECT_LOCATION/$INPUT_PACKAGELOCATION"
-export GOBRA_JAR="/gobra/gobra.jar"
+cd /docker-action
 
-START_TIME=$SECONDS
-EXIT_CODE=0
+echo "Creating a docker image with Gobra image tag: $INPUT_IMAGEVERSION"
+docker build -t docker-action --build-arg image_version="$INPUT_IMAGEVERSION" .
 
-if timeout "$INPUT_GLOBALTIMEOUT" ./verifyPackages.sh; then
-    echo -e "${GREEN}Verification completed successfully in${RESET}"
-else
-    EXIT_CODE=$?
-    if [ $EXIT_CODE -eq 124 ]; then
-	echo -e "${RED}Verification timed out globally${RESET}"
-    else
-	echo -e "${RED}There are verification errors${RESET}"
-    fi
-fi
-
-TIME_PASSED=$[ $SECONDS-$START_TIME ]
-
-NUMBER_OF_PACKAGES_VERIFIED=$(cat output_num_packages)
-NUMBER_OF_FAILED_PACKAGE_VERIFICATIONS=$(cat output_num_failed_packages)
-NUMBER_OF_TIMEOUT_PACKAGE_VERIFICATIONS=$(cat output_num_timeout_packages)
-
-echo "::set-output name=time::$TIME_PASSED"
-echo "::set-output name=numberOfPackages::$NUMBER_OF_PACKAGES_VERIFIED"
-echo "::set-output name=numberOfFailedPackages::$NUMBER_OF_FAILED_PACKAGE_VERIFICATIONS"
-echo "::set-output name=numberOfTimedoutPackages::$NUMBER_OF_TIMEOUT_PACKAGE_VERIFICATIONS"
-echo "::set-output name=numberOfMethods::0" # TODO: implement
-echo "::set-output name=numberOfAssumptions::0" # TODO: implement
-echo "::set-output name=numberOfDependingMethods::0" # TODO: implement
-
-exit $EXIT_CODE
+echo "Run Docker Action container"
+docker run -e INPUT_CACHING -e INPUT_PROJECTLOCATION -e INPUT_PACKAGELOCATION -e INPUT_PACKAGES -e INPUT_JAVAXSS -e INPUT_JAVAXMX -e INPUT_GLOBALTIMEOUT -e INPUT_PACKAGETIMEOUT \
+  -v $GITHUB_WORKSPACE:$GITHUB_WORKSPACE \
+  --workdir $GITHUB_WORKSPACE docker-action
