@@ -73,10 +73,11 @@ Total number of packages where the verification timed out.
 
 ## Example usage
 
+```yaml
 uses: jogasser/gobra-action@main
   with:
     javaXss: 64m
     globalTimeout: 1h
     packageTimeout: 10m
     packageLocation: gobra
-          
+```
