@@ -33,7 +33,7 @@ inputs:
     required: true
     default: '1h'
   imageVersion:
-    description: 'Which gobra docker image tack to use'
+    description: 'Which gobra docker image tag to use'
     required: true
     default: 'latest'
 outputs:
