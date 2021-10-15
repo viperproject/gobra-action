@@ -8,54 +8,54 @@ This action verifies gobra files in a project
 
 **Required** Wheather or not caching should be enabled (1) or disabled (0)
 
-**Default** 1
+*Default:*  1
 
 ## `projectLocation`
 
-**Required** The relative location of the project in the workflow context
+**Required** The relative location of the project in the workflow context, doesn't have to be set normally except in the case, where the GitHub checkout action is used with the `path` option.
 
-**Default** The action searches for a folder named like the repo per default
+*Default:* The action searches for a folder, named like the repo, per default.
 
 ## `packageLocation`
 
-**Required** Where the gobra packages are located
+**Required** Where the gobra packages are located under the `projectLocation` folder.
 
-**Default** Same folder as `projectLocation`
+*Default:* Same folder as `projectLocation`
 
 ## `packages`
 
-**Not Required** Which packages should be verified
+**Not Required** Which packages should be verified, should be a list of directories relative to `packageLocation`.
 
 ## `javaXss`
 
-**Required** Java stack size
+**Required** Java stack size, increase in case of stack overflows
 
-**Default** 128m
+*Default:* 128m
 
 ## `javaXmx`
 
-**Required** Javamax heap size
+**Required** Java maximum heap size
 
-**Default** 256m
+*Default:* 256m
 
 
 ## `globalTimeout`
 
-**Required** Time till the action times out
+**Required** Time till the action as a whole times out
 
-**Default** 3h
+*Default:* 3h
 
 ## `packageTimeout`
 
 **Required** Time till the verification of a package times out
 
-**Default** 1h
+*Default:* 1h
 
 ## `imageVersion`
 
-**Required** Which gobra docker image tag should be used
+**Required** Which [gobra docker image](https://github.com/jogasser/gobra/pkgs/container/gobra) tag should be used (
 
-**Default** latest
+*Default:* latest
 
 ## Outputs
 
