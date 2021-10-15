@@ -68,7 +68,7 @@ Total number of packages that were verified.
 ## `numberOfFailedPackages`
 Total number of packages where the verification returned errors (no timeouts).
 
-## `numberOfTimetoutPackages`
+## `numberOfTimedoutPackages`
 Total number of packages where the verification timed out.
 
 ## Example usage
