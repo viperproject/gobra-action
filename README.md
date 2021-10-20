@@ -26,6 +26,12 @@ This action verifies gobra files in a project
 
 **Not Required** Which packages should be verified, should be a list of directories relative to `packageLocation`.
 
+## `viperBackend`
+
+**Required** Which viper backend to use, one of `SILICON` or `CARBON`
+
+*Default:* `SILICON`
+
 ## `javaXss`
 
 **Required** Java stack size, increase in case of stack overflows

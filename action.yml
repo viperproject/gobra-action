@@ -16,6 +16,10 @@ inputs:
   packages:
     description: 'Names of packages to verify, all packages are verified by default'
     required: false
+  viperBackend:
+    description: 'Which viper backend to use'
+    required: true
+    defaukt: "SILICON"
   javaXss:
     description: 'Java stack size'
     required: true
