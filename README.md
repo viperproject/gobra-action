@@ -44,7 +44,6 @@ This action verifies gobra files in a project
 
 *Default:* 256m
 
-
 ## `globalTimeout`
 
 **Required** Time till the action as a whole times out
@@ -57,9 +56,15 @@ This action verifies gobra files in a project
 
 *Default:* 1h
 
+## `imageName`
+
+**Required** Which docker image should be used
+
+*Default:* [ghcr.io/viperproject/gobra](https://github.com/viperproject/gobra/pkgs/container/gobra)
+
 ## `imageVersion`
 
-**Required** Which [gobra docker image](https://github.com/jogasser/gobra/pkgs/container/gobra) tag should be used (
+**Required** Which image tag should be used
 
 *Default:* latest
 
