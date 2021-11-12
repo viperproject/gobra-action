@@ -1,6 +1,7 @@
 ARG image_version=latest
+ARG image_name=ghcr.io/viperproject/gobra
 
-FROM ghcr.io/jogasser/gobra:${image_version}
+FROM ${image_name}:${image_version}
 
 COPY entrypoint.sh /gobra/entrypoint.sh
 COPY verifyPackages.sh /gobra/verifyPackages.sh

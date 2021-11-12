@@ -36,8 +36,12 @@ inputs:
     description: 'Time till package verification times out'
     required: true
     default: '1h'
+  imageName:
+    description: 'Which base image should be used'
+    required: true
+    default: 'ghcr.io/viperproject/gobra'
   imageVersion:
-    description: 'Which gobra docker image tag to use'
+    description: 'Which image'
     required: true
     default: 'latest'
 outputs:
