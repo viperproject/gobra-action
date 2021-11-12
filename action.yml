@@ -19,7 +19,7 @@ inputs:
   viperBackend:
     description: 'Which viper backend to use'
     required: true
-    defaukt: "SILICON"
+    default: "SILICON"
   javaXss:
     description: 'Java stack size'
     required: true
