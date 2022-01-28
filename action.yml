@@ -9,8 +9,8 @@ inputs:
     description: 'Subirectory in which the project base is located'
     required: true
     default: ""
-  packageLocation:
-    description: 'Subdirectory of the project location in which the package base is located'
+  packageDirectories:
+    description: 'Directories used to lookup packages for go (relative to the project location)3'
     required: true
     default: ""
   packages:
@@ -41,11 +41,11 @@ inputs:
     required: true
     default: 'ghcr.io/viperproject/gobra'
   imageVersion:
-    description: 'Which image'
+    description: 'Which image version should be used'
     required: true
     default: 'latest'
 outputs:
-  time: # id of output
+  time:
     description: 'Total verification time in seconds'
   numberOfPackages:
     description: 'Number of packages verified'

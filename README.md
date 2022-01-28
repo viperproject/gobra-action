@@ -16,15 +16,15 @@ This action verifies gobra files in a project
 
 *Default:* The action searches for a folder, named like the repo, per default.
 
-## `packageLocation`
+## `packageDirectories`
 
-**Required** Where the gobra packages are located under the `projectLocation` folder.
+**Required** lookup paths of go packages, relatice to the project directory
 
 *Default:* Same folder as `projectLocation`
 
 ## `packages`
 
-**Not Required** Which packages should be verified, should be a list of directories relative to `packageLocation`.
+**Not Required** Names of the packages that should be verified. Ignores all other packages if 
 
 ## `viperBackend`
 
