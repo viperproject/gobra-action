@@ -11,8 +11,7 @@ inputs:
     default: ""
   packageDirectories:
     description: 'Directories used to lookup packages for go (relative to the project location)3'
-    required: true
-    default: ""
+    required: false
   packages:
     description: 'Names of packages to verify, all packages are verified by default'
     required: false
