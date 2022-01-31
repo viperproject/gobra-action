@@ -43,7 +43,7 @@ EXIT_CODE=0
 
 $CMD="java $JAVA_ARGS $GOBRA_ARGS"
 
-if timeout "$INPUT_GLOBALTIMEOUT" bash -c $CMD; then
+if timeout "$INPUT_GLOBALTIMEOUT" "bash -c $CMD"; then
     echo -e "${GREEN}Verification completed successfully${RESET}"
 else
     EXIT_CODE=$?
