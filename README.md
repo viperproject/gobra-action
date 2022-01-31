@@ -8,20 +8,19 @@ This action verifies gobra files in a project
 
 **Required** Wheather or not caching should be enabled (1) or disabled (0)
 
-*Default:*  1
+*Default:*  0
 
-## `projectLocation`
+## `srcDirectory`
 
-**Required** The relative location of the project in the workflow context, doesn't have to be set normally except in the case, where the GitHub checkout action is used with the `path` option.
-
-*Default:* The action searches for a folder, named like the repo, per default.
+**Required** Path to the project source directory, needs to include the path, to where the project was pulled to.
+*Default:* The project root
 
 ## `packageDirectories`
 
-**Required** lookup paths of go packages, relatice to the project directory
+**Not Required** lookup paths of go packages, relatice to the project directory
 
 *Default:* Same folder as `projectLocation`
-
+ 
 ## `packages`
 
 **Not Required** Names of the packages that should be verified. Ignores all other packages if 

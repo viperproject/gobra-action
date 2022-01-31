@@ -1,16 +1,16 @@
 name: 'Gobra'
-description: 'Verify your Go project with s'
+description: 'Verify your Go project with Gobra'
 inputs:
   caching:
     description: 'Enable caching of verification results'
     required: true
-    default: 1
-  projectLocation:
+    default: 0
+  srcDirectory:
     description: 'Subirectory in which the project base is located'
     required: true
     default: ""
   packageDirectories:
-    description: 'Directories used to lookup packages for go (relative to the project location)3'
+    description: 'Directories used to lookup packages for go (relative to the project location)'
     required: false
   packages:
     description: 'Names of packages to verify, all packages are verified by default'
@@ -46,18 +46,6 @@ inputs:
 outputs:
   time:
     description: 'Total verification time in seconds'
-  numberOfPackages:
-    description: 'Number of packages verified'
-  numberOfFailedPackages:
-    description: 'Number of packages, where the verification failed'
-  numberOfTimedoutPackages:
-    description: 'Number of packages, where the verification timed out'  
-  numberOfMethods:
-    description: 'Number of methods verified'
-  numberOfAssumptions:
-    description: 'Number of assumptions'
-  numberOfDependingMethods:
-    description: 'Number of methods depending on assumptions'
 runs:
   using: 'docker'
   image: 'Dockerfile'
