@@ -32,15 +32,15 @@ inputs:
   javaXmx:
     description: 'Java max heap size'
     required: true
-    default: '256m'
+    default: '4g'
   globalTimeout:
     description: 'Time till verification times out'
     required: true
-    default: '3h'
+    default: '5h'
   packageTimeout:
     description: 'Time till package verification times out'
     required: true
-    default: '1h'
+    default: '2h'
   imageName:
     description: 'Which base image should be used'
     required: true

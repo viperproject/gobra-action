@@ -23,7 +23,16 @@ This action verifies gobra files in a project
  
 ## `packages`
 
-**Not Required** Names of the packages that should be verified. Ignores all other packages if 
+**Not Required** Names of the packages that should be verified. If set ignores all packages not contained in this argument.
+
+## `excludePackages`
+
+**Not Required** Names of the packages that should NOT be verified. Takes precedence over the `packages` argument.
+
+## `chop`
+**Not Required** In how many pieces a viper program should be chopped for verification. May help verify very large packages
+
+*Default:* 1
 
 ## `viperBackend`
 
@@ -41,29 +50,29 @@ This action verifies gobra files in a project
 
 **Required** Java maximum heap size
 
-*Default:* 256m
+*Default:* 4g
 
 ## `globalTimeout`
 
-**Required** Time till the action as a whole times out
+**Required** Time till the action as a whole times out. Note that a GitHub workflow step times out automatically after 6 hours.
 
-*Default:* 3h
+*Default:* 5h
 
 ## `packageTimeout`
 
-**Required** Time till the verification of a package times out
+**Required** Time till the verification of a package times out.
 
-*Default:* 1h
+*Default:* 2h
 
 ## `imageName`
 
-**Required** Which docker image should be used
+**Required** Which docker image should be used.
 
 *Default:* [ghcr.io/viperproject/gobra](https://github.com/viperproject/gobra/pkgs/container/gobra)
 
 ## `imageVersion`
 
-**Required** Which image tag should be used
+**Required** Which image tag should be used.
 
 *Default:* latest
 
