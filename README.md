@@ -121,3 +121,22 @@ There are two artifacts generated in this action that are worth to be stored:
  - Once the collected statistics,  located in `${{ runner.workspace }}/.gobra/stats.json`. 
 
 The following workflow excerpt stores these files as artifacts:
+
+```yaml
+- name: Verify all Gobra files
+  uses: jogasser/gobra-action@main
+  with:
+    caching: 1
+    viperBackend: VSWITHSILICON
+- name: Archive cache
+  uses: actions/upload-artifact@v2
+  with:
+    name: cache
+    path: ${{ runner.workspace }}/.gobra/cache.json
+- name: Archive statistics report
+  uses: actions/upload-artifact@v2
+  with:
+    name: stats
+    path: ${{ runner.workspace }}/.gobra/stats.json     
+
+```
