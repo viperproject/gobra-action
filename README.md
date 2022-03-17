@@ -8,23 +8,31 @@ This action verifies gobra files in a project
 
 **Required** Wheather or not caching should be enabled (1) or disabled (0)
 
-*Default:*  1
+*Default:*  0
 
-## `projectLocation`
+## `srcDirectory`
 
-**Required** The relative location of the project in the workflow context, doesn't have to be set normally except in the case, where the GitHub checkout action is used with the `path` option.
+**Required** Path to the project source directory, needs to include the path, to where the project was pulled to.
+*Default:* The project root
 
-*Default:* The action searches for a folder, named like the repo, per default.
+## `packageDirectories`
 
-## `packageLocation`
-
-**Required** Where the gobra packages are located under the `projectLocation` folder.
+**Not Required** lookup paths of go packages, relatice to the project directory
 
 *Default:* Same folder as `projectLocation`
-
+ 
 ## `packages`
 
-**Not Required** Which packages should be verified, should be a list of directories relative to `packageLocation`.
+**Not Required** Names of the packages that should be verified. If set ignores all packages not contained in this argument.
+
+## `excludePackages`
+
+**Not Required** Names of the packages that should NOT be verified. Takes precedence over the `packages` argument.
+
+## `chop`
+**Not Required** In how many pieces a viper program should be chopped for verification. May help verify very large packages
+
+*Default:* 1
 
 ## `viperBackend`
 
@@ -42,29 +50,29 @@ This action verifies gobra files in a project
 
 **Required** Java maximum heap size
 
-*Default:* 256m
+*Default:* 4g
 
 ## `globalTimeout`
 
-**Required** Time till the action as a whole times out
+**Required** Time till the action as a whole times out. Note that a GitHub workflow step times out automatically after 6 hours.
 
-*Default:* 3h
+*Default:* 5h
 
 ## `packageTimeout`
 
-**Required** Time till the verification of a package times out
+**Required** Time till the verification of a package times out.
 
-*Default:* 1h
+*Default:* 2h
 
 ## `imageName`
 
-**Required** Which docker image should be used
+**Required** Which docker image should be used.
 
 *Default:* [ghcr.io/viperproject/gobra](https://github.com/viperproject/gobra/pkgs/container/gobra)
 
 ## `imageVersion`
 
-**Required** Which image tag should be used
+**Required** Which image tag should be used.
 
 *Default:* latest
 

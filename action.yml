@@ -1,21 +1,26 @@
 name: 'Gobra'
-description: 'Verify your Go project with s'
+description: 'Verify your Go project with Gobra'
 inputs:
   caching:
     description: 'Enable caching of verification results'
     required: true
-    default: 1
-  projectLocation:
+    default: '0'
+  srcDirectory:
     description: 'Subirectory in which the project base is located'
     required: true
     default: ""
-  packageLocation:
-    description: 'Subdirectory of the project location in which the package base is located'
-    required: true
-    default: ""
+  packageDirectories:
+    description: 'Directories used to lookup packages for go (relative to the project location)'
+    required: false
   packages:
     description: 'Names of packages to verify, all packages are verified by default'
     required: false
+  excludePackages:
+    description: 'Names of packages to not include in the verification(this takes precedence over the `package` argument' 
+    required: false
+  chop:
+    description: 'In how many parts a viper program should be split at maximum'
+    default: '1'
   viperBackend:
     description: 'Which viper backend to use'
     required: true
@@ -27,38 +32,26 @@ inputs:
   javaXmx:
     description: 'Java max heap size'
     required: true
-    default: '256m'
+    default: '4g'
   globalTimeout:
     description: 'Time till verification times out'
     required: true
-    default: '3h'
+    default: '5h'
   packageTimeout:
     description: 'Time till package verification times out'
     required: true
-    default: '1h'
+    default: '2h'
   imageName:
     description: 'Which base image should be used'
     required: true
     default: 'ghcr.io/viperproject/gobra'
   imageVersion:
-    description: 'Which image'
+    description: 'Which image version should be used'
     required: true
     default: 'latest'
 outputs:
-  time: # id of output
+  time:
     description: 'Total verification time in seconds'
-  numberOfPackages:
-    description: 'Number of packages verified'
-  numberOfFailedPackages:
-    description: 'Number of packages, where the verification failed'
-  numberOfTimedoutPackages:
-    description: 'Number of packages, where the verification timed out'  
-  numberOfMethods:
-    description: 'Number of methods verified'
-  numberOfAssumptions:
-    description: 'Number of assumptions'
-  numberOfDependingMethods:
-    description: 'Number of methods depending on assumptions'
 runs:
   using: 'docker'
   image: 'Dockerfile'
