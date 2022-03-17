@@ -59,13 +59,11 @@ This action verifies gobra files in a project
 
 **Required** Time till the action as a whole times out. Note that a GitHub workflow step times out automatically after 6 hours.
 
-*Default:* 5h
+*Default:* 6h
 
 ## `packageTimeout`
 
-**Required** Time till the verification of a package times out.
-
-*Default:* 2h
+**Not Required** Time till the verification of a package times out.
 
 ## `imageName`
 
