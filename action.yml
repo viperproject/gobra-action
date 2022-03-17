@@ -5,6 +5,9 @@ inputs:
     description: 'Enable caching of verification results'
     required: true
     default: '0'
+  projectLocation:
+    description: 'Location in which the project is located in the workflow context (determined by the checkout action for example)'
+    required: false
   srcDirectory:
     description: 'Subirectory in which the files to be verified are located'
     required: true
