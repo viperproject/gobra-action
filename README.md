@@ -81,16 +81,9 @@ This action verifies gobra files in a project
 ## `time`
 Total verification time in seconds.
 
-## `numberOfPackages`
-Total number of packages that were verified.
-
-## `numberOfFailedPackages`
-Total number of packages where the verification returned errors (no timeouts).
-
-## `numberOfTimedoutPackages`
-Total number of packages where the verification timed out.
-
 ## Example usage
+
+### Without caching
 
 ```yaml
 uses: jogasser/gobra-action@main
@@ -100,3 +93,31 @@ uses: jogasser/gobra-action@main
     packageTimeout: 10m
     packageLocation: gobra
 ```
+
+### With caching
+
+The cache file is located in `${{ runner.workspace }}/.gobra/cache.json`.
+This file needs to be stored and resored on subsequent runs to successfully enable caching.
+Here is an example with the default GitHub caching action:
+
+```yaml
+- name: Cache Viper Server cache
+  uses: actions/cache@v2
+  env:
+    cache-name: vs-cache
+  with:
+    path: ${{ runner.workspace }}/.gobra/cache.json 
+    key: ${{ env.cache-name }}
+- name: Verify all Gobra files
+  uses: jogasser/gobra-action@main
+  with:
+    caching: 1
+    viperBackend: VSWITHSILICON
+```
+
+### Storing artifacts
+There are two artifacts generated in this action that are worth to be stored:
+ - Once the cache file, located in `${{ runner.workspace }}/.gobra/cache.json`.
+ - Once the collected statistics,  located in `${{ runner.workspace }}/.gobra/stats.json`. 
+
+The following workflow excerpt stores these files as artifacts:
