@@ -10,17 +10,20 @@ This action verifies gobra files in a project
 
 *Default:*  0
 
+## `projectLocation`
+
+**Not Required** Location in which the project is located in the workflow context. Per default the action will look in a folder named the same as the repository(This matches the pull action's default behaviour).
+
 ## `srcDirectory`
 
-**Required** Path to the project source directory, needs to include the path, to where the project was pulled to.
-*Default:* The project root
+**Required** Path to the project source directory relative to the `projectLocation`.
+*Default:* The projectLocation
 
 ## `packageDirectories`
 
-**Not Required** lookup paths of go packages, relatice to the project directory
-
+**Not Required** lookup paths of go packages, relative to the `projectLocation`.
 *Default:* Same folder as `projectLocation`
- 
+
 ## `packages`
 
 **Not Required** Names of the packages that should be verified. If set ignores all packages not contained in this argument.
