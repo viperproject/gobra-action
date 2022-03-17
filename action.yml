@@ -39,11 +39,10 @@ inputs:
   globalTimeout:
     description: 'Time till verification times out'
     required: true
-    default: '5h'
+    default: '6h'
   packageTimeout:
     description: 'Time till package verification times out'
-    required: true
-    default: '2h'
+    required: false
   imageName:
     description: 'Which base image should be used'
     required: true
