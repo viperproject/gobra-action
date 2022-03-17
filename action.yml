@@ -6,7 +6,7 @@ inputs:
     required: true
     default: '0'
   srcDirectory:
-    description: 'Subirectory in which the project base is located'
+    description: 'Subirectory in which the files to be verified are located'
     required: true
     default: ""
   packageDirectories:
