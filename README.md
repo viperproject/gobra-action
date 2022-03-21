@@ -49,7 +49,7 @@ The following snippet shows how to store these files as artifacts:
 
 ```yaml
 - name: Verify all Gobra files
-  uses: jogasser/gobra-action@main
+  uses: viperproject/gobra-action@main
   with:
     caching: 1
     viperBackend: VSWITHSILICON
