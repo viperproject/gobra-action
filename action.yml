@@ -2,53 +2,53 @@ name: 'Gobra'
 description: 'Verify your Go project with Gobra'
 inputs:
   caching:
-    description: 'Enable caching of verification results'
+    description: 'Enable caching of verification results. The possible values are 0 (disabled) and 1 (enabled).'
     required: true
     default: '0'
   projectLocation:
-    description: 'Location in which the project is located in the workflow context (determined by the checkout action for example)'
+    description: 'Location in which the project is located in the workflow context. By default, it looks in a folder with the same name as the repository.'
     required: false
   srcDirectory:
-    description: 'Subirectory in which the files to be verified are located'
+    description: 'Subdirectory where the files to verify are located, relative to the project location'
     required: true
     default: ""
   packageDirectories:
-    description: 'Directories used to lookup packages for go (relative to the project location)'
+    description: 'Directories used for package lookup. Their paths are relative to the project location.'
     required: false
   packages:
-    description: 'Names of packages to verify, all packages are verified by default'
+    description: 'Names of the packages to verify. By default, all packages are verified.'
     required: false
   excludePackages:
-    description: 'Names of packages to not include in the verification(this takes precedence over the `package` argument' 
+    description: 'Names of packages that should not be verified. This option takes precedence over the `package` option.' 
     required: false
   chop:
-    description: 'In how many parts a viper program should be split at maximum'
+    description: 'Maximum number of files in which a file can be split with the chopper feature of Gobra. Larger values may improve the verification time of large codebases.'
     default: '1'
   viperBackend:
-    description: 'Which viper backend to use'
+    description: 'Which Viper backend to use. Can be one of "SILICON", "VSWITHSILICON", "CARBON", and "VSWITHCARBON".'
     required: true
     default: "SILICON"
   javaXss:
-    description: 'Java stack size'
+    description: 'Java stack size. Should be increased in case of frequent stack overflows.'
     required: true
     default: '128m'
   javaXmx:
-    description: 'Java max heap size'
+    description: 'Maximum size of the heap.'
     required: true
     default: '4g'
   globalTimeout:
-    description: 'Time till verification times out'
+    description: 'Time-out for the entire Gobra Action. Note that a GitHub workflow step times-out automatically after 6 hours.'
     required: true
     default: '6h'
   packageTimeout:
-    description: 'Time till package verification times out'
+    description: 'Time-out for the verification of a single package.'
     required: false
   imageName:
-    description: 'Which base image should be used'
+    description: 'Base image of Gobra to be used.'
     required: true
     default: 'ghcr.io/viperproject/gobra'
   imageVersion:
-    description: 'Which image version should be used'
+    description: 'Version of the base image to be used.'
     required: true
     default: 'latest'
 outputs:
