@@ -17,7 +17,7 @@ uses: viperproject/gobra-action@main
     javaXss: 64m
     globalTimeout: 1h
     packageTimeout: 10m
-    packageLocation: go
+    projectLocation: go
 ```
 
 ### Set-up with caching
