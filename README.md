@@ -13,7 +13,7 @@ See [action.yml](./action.yml)
 ```yaml
 uses: viperproject/gobra-action@main
   with:
-  	caching: 0
+    caching: 0
     javaXss: 64m
     globalTimeout: 1h
     packageTimeout: 10m
