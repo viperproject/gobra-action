@@ -56,7 +56,7 @@ inputs:
     required: false
     default: '0'
   module:
-    description: 'Name of current module that should be used'
+    description: 'Name of current module that should be used for resolving imports'
     required: false
 outputs:
   time:
