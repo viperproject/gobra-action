@@ -51,6 +51,13 @@ inputs:
     description: 'Version of the base image to be used.'
     required: true
     default: 'latest'
+  headerOnly:
+    description: 'Whether Gobra should only verify files with the header "// +gobra"'
+    required: false
+    default: '0'
+  module:
+    description: 'Name of current module that should be used'
+    required: false
 outputs:
   time:
     description: 'Total verification time in seconds'
