@@ -34,8 +34,16 @@ if [[ $INPUT_CACHING -eq 1 ]]; then
     GOBRA_ARGS="$GOBRA_ARGS --cacheFile .gobra/cache.json"
 fi
 
+if [[ $INPUT_HEADERONLY -eq 1 ]]; then
+    GOBRA_ARGS="$GOBRA_ARGS --onlyFilesWithHeader"
+fi
+
 if [[ $INPUT_PACKAGES ]]; then
     GOBRA_ARGS="$GOBRA_ARGS -p $INPUT_PACKAGES"
+fi
+
+if [[ $INPUT_MODULE ]]; then
+    GOBRA_ARGS="$GOBRA_ARGS -m $INPUT_MODULE"
 fi
 
 if [[ $INPUT_EXCLUDEPACKAGES ]]; then
