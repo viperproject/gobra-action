@@ -22,10 +22,12 @@ fi
 GOBRA_JAR="/gobra/gobra.jar"
 
 JAVA_ARGS="-Xss$INPUT_JAVAXSS -Xmx$INPUT_JAVAXMX -jar $GOBRA_JAR"
+# TODO: make recursive optional
 GOBRA_ARGS="-i $GOBRAINPUT_LOCATION -r --backend $INPUT_VIPERBACKEND --chop $INPUT_CHOP"
 
-if [[ $INPUT_PACKAGEDIRECTORIES ]]; then
-    GOBRA_ARGS="$GOBRA_ARGS -I $PROJECT_LOCATION/$INPUT_PACKAGEDIRECTORIES"
+# TODO: make this handle lists, maybe put project_location always by default (?), do not assume module name for some dependencies!
+if [[ $INPUT_INCLUDEPATHS ]]; then
+    GOBRA_ARGS="$GOBRA_ARGS -I $PROJECT_LOCATION/$INPUT_INCLUDEPATHS"
 else
     GOBRA_ARGS="$GOBRA_ARGS -I $PROJECT_LOCATION" 
 fi
