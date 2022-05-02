@@ -4,12 +4,12 @@ inputs:
   caching:
     description: 'Enable caching of verification results. The possible values are 0 (disabled) and 1 (enabled).'
     required: true
-    default: '0'
+    default: '1' # cache enabled by default
   projectLocation:
     description: 'Location in which the project is located in the workflow context. By default, it looks in a folder with the same name as the repository.'
     required: false
   srcDirectory:
-    description: 'Subdirectory where the files to verify are located, relative to the project location'
+    description: 'Subdirectory where the files to verify are located relative to the project location'
     required: true
     default: ""
   packageDirectories:
@@ -21,13 +21,17 @@ inputs:
   excludePackages:
     description: 'Names of packages that should not be verified. This option takes precedence over the `package` option.' 
     required: false
+  recursive:
+    description: 'Verify nested packages recursively'
+    required: false
+    default:  '1'
   chop:
     description: 'Maximum number of files in which a file can be split with the chopper feature of Gobra. Larger values may improve the verification time of large codebases.'
     default: '1'
   viperBackend:
     description: 'Which Viper backend to use. Can be one of "SILICON", "VSWITHSILICON", "CARBON", and "VSWITHCARBON".'
     required: true
-    default: "SILICON"
+    default: "VSWITHSILICON" # to allow caching by default
   javaXss:
     description: 'Java stack size. Should be increased in case of frequent stack overflows.'
     required: true
@@ -58,10 +62,13 @@ inputs:
   module:
     description: 'Name of current module that should be used for resolving imports'
     required: false
+  assumeInjectivityOnInhale:
+    description: 'Assume injectivity of predicates on inhale as done in versions of Viper before 2022.02.'
+    required: false
+    default: '0'
 outputs:
   time:
     description: 'Total verification time in seconds'
 runs:
   using: 'docker'
   image: 'Dockerfile'
-    
