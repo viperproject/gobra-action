@@ -17,7 +17,7 @@ jobs:
       - name: Checkout Project
         uses: actions/checkout@v3
       - name: Verify Gobra files (files mode)
-        uses: ./action.yml
+        uses: ../action.yml
         with:
           files: "test/files_test/file1.go test/files_test/file2.gobra"
           includePaths: "test/include_path"
