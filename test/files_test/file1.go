@@ -5,10 +5,8 @@ package main
 
 import (
 	"pkg1"
-	"pkg2"
 )
 
 func main() {
 	pkg1.F()
-	pkg2.G()
 }

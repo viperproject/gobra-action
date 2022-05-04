@@ -27,6 +27,6 @@ jobs:
         uses: viperproject/gobra-action@update-gobra-434
         with:
           files: "test/files_test/file1.go test/files_test/file2.gobra"
-          includePaths: "test/include\ path test/include_path"
+          includePaths: "test/include_path"
           packageTimeout: 5m
           globalTimeout: 10m
