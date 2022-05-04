@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
-# Copyright (c) 2011-2020 ETH Zurich.
+# Copyright (c) 2011-2022 ETH Zurich.
 
 name: test
 
@@ -15,16 +15,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Project
-        uses: actions/checkout@v2
-      - name: Cache Viper Server cache
-        uses: actions/cache@v2
-        env:
-          cache-name: vs-cache
-        with:
-          path: ${{ runner.workspace }}/.gobra/cache.json 
-          key: ${{ env.cache-name }}
-      - name: Verify all Gobra files
-        uses: viperproject/gobra-action@update-gobra-434
+        uses: actions/checkout@v3
+      - name: Verify Gobra files (files mode)
+        uses: .
         with:
           files: "test/files_test/file1.go test/files_test/file2.gobra"
           includePaths: "test/include_path"
