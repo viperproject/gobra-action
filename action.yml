@@ -8,12 +8,11 @@ inputs:
   projectLocation:
     description: 'Location in which the project is located in the workflow context. By default, it looks in a folder with the same name as the repository.'
     required: false
-  srcDirectory:
-    description: 'Subdirectory where the files to verify are located relative to the project location'
-    required: true
-    default: ""
   includePaths:
     description: 'Directories used for package lookup. Their paths are relative to the project location.'
+    required: false
+  files:
+    description: 'List of Go and Gobra files to verify.'
     required: false
   packages:
     description: 'Names of the packages to verify. By default, all packages are verified.'
@@ -56,14 +55,14 @@ inputs:
     required: true
     default: 'latest'
   headerOnly:
-    description: 'Whether Gobra should only verify files with the header "// +gobra"'
+    description: 'Whether Gobra should only verify files with the header "// +gobra".'
     required: false
     default: '0'
   module:
-    description: 'Name of current module that should be used for resolving imports'
+    description: 'Name of current module that should be used for resolving imports.'
     required: false
   assumeInjectivityOnInhale:
-    description: 'Assume injectivity of predicates on inhale as done in versions of Viper before 2022.02.'
+    description: 'Assume injectivity of the receiver expression when inhaling quantified permissions, instead of checking it, like in Viper versions previous to 2022.02.'
     required: false
     default: '0'
 outputs:
