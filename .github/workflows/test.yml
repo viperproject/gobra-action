@@ -24,9 +24,9 @@ jobs:
           path: ${{ runner.workspace }}/.gobra/cache.json 
           key: ${{ env.cache-name }}
       - name: Verify all Gobra files
-        uses: viperproject/gobra-action@main
+        uses: "viperproject/gobra-action"
         with:
-          files: test/files_test/file1.go test/files_test/file2.gobra
-          includePaths: test/include\ path test/include_path
+          files: "test/files_test/file1.go test/files_test/file2.gobra"
+          includePaths: "test/include\ path test/include_path"
           packageTimeout: 5m
           globalTimeout: 10m
