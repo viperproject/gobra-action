@@ -8,7 +8,7 @@ RESET='\033[0m' # No Color
 REPOSITORY_NAME=$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//")
 
 # returns the absolute path from a base path ($1) and a list of paths relative
-# to the base path (${@[@]:2}). Also works if one of the argument paths is an
+# to the base path (${@:2}). Also works if one of the argument paths is an
 # absolute path. Note: does not handle paths that contain a space.
 getFileListInDir () (
     local LOCATION=$1
@@ -16,9 +16,9 @@ getFileListInDir () (
     # the tail of the list of arguments (i.e., the args without
     # the function name and the first argument (LOCATION) are
     # the list of paths to be processed.
-    # echo $(realpath -e ${@[@]:2}) # -e flag disabled, Gobra complains
+    # echo $(realpath -e ${@:2}) # -e flag disabled, Gobra complains
                                     # about missing files anyway
-    echo $(realpath ${@[@]:2})
+    echo $(realpath ${@:2})
     # support for paths with spaces can be added if we execute the
     # following command, instead of the previous one. However, doing
     # this puts the user in control of an input that is eval'd.
