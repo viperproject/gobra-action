@@ -24,7 +24,7 @@ jobs:
           path: ${{ runner.workspace }}/.gobra/cache.json 
           key: ${{ env.cache-name }}
       - name: Verify all Gobra files
-        uses: viperproject/gobra-action
+        uses: viperproject/gobra-action@main
         with:
           files: "test/files_test/file1.go test/files_test/file2.gobra"
           includePaths: "test/include\ path test/include_path"
