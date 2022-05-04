@@ -19,7 +19,7 @@ getFileListInDir () (
     # should handle paths containing escaped spaces.
     # echo $(realpath -e ${@[@]:2}) # -e flag disabled, Gobra complains
                                     # about missing files anyway
-    echo $(realpath -e "${@[@]:2}")
+    echo $(realpath -e "${@:2}")
 )
 
 if [[ $INPUT_PROJECTLOCATION ]]; then
