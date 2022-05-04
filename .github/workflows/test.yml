@@ -15,9 +15,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Project
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3.1
       - name: Verify Gobra files (files mode)
-        uses: setup-and-test: ./action.yml
+        uses: ./action.yml
         with:
           files: "test/files_test/file1.go test/files_test/file2.gobra"
           includePaths: "test/include_path"
