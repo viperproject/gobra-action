@@ -37,7 +37,7 @@ if [[ $INPUT_RECURSIVE -eq 1 ]]; then
 fi
 
 if [[ $INPUT_FILES ]]; then
-    GOBRA_ARGS="-i ${getFileListInDir PROJECT_LOCATION $INPUT_FILES} $GOBRA_ARGS"
+    GOBRA_ARGS="-i ${getFileListInDir $PROJECT_LOCATION $INPUT_FILES} $GOBRA_ARGS"
 fi
 
 if [[ $INPUT_PACKAGES ]]; then
@@ -47,7 +47,7 @@ if [[ $INPUT_PACKAGES ]]; then
     else
         # If not in recursive mode, INPUT_PACKAGES are the paths to
         # the packages
-        GOBRA_ARGS="-i ${getFileListInDir PROJECT_LOCATION $INPUT_PACKAGES} $GOBRA_ARGS"
+        GOBRA_ARGS="-i ${getFileListInDir $PROJECT_LOCATION $INPUT_PACKAGES} $GOBRA_ARGS"
     fi
 fi
 
