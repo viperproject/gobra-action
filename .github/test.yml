@@ -1,0 +1,32 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+# Copyright (c) 2011-2020 ETH Zurich.
+
+name: test
+
+on:
+  push: # run this workflow on every push
+  pull_request: # run this workflow on every pull_request
+
+jobs:
+  setup-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Project
+        uses: actions/checkout@v2
+      - name: Cache Viper Server cache
+        uses: actions/cache@v2
+        env:
+          cache-name: vs-cache
+        with:
+          path: ${{ runner.workspace }}/.gobra/cache.json 
+          key: ${{ env.cache-name }}
+      - name: Verify all Gobra files
+        uses: viperproject/gobra-action@main
+        with:
+          files: "test/files_test/file1.go test/files_test/file2.gobra"
+          includePaths: "test/include\ path test/include_path"
+          packageTimeout: 5m
+          globalTimeout: 10m
