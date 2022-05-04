@@ -23,7 +23,7 @@ inputs:
   recursive:
     description: 'Verify nested packages recursively'
     required: false
-    default:  '1'
+    default:  '0'
   chop:
     description: 'Maximum number of files in which a file can be split with the chopper feature of Gobra. Larger values may improve the verification time of large codebases.'
     default: '1'
