@@ -57,7 +57,7 @@ if [[ $INPUT_PACKAGES ]]; then
         # If not in recursive mode, INPUT_PACKAGES are the paths to
         # the packages
         RESOLVED_PATHS="$(getFileListInDir $PROJECT_LOCATION $INPUT_PACKAGES)"
-        GOBRA_ARGS="-i $RESOLVED_PATHS $GOBRA_ARGS"
+        GOBRA_ARGS="-p $RESOLVED_PATHS $GOBRA_ARGS"
     fi
 fi
 
