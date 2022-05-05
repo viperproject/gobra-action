@@ -21,7 +21,7 @@ jobs:
         with:
           files: "test/files_test/file1.go test/files_test/file2.gobra"
           # TODO: add more imports
-          includePaths: test/include_path test/include\\ path
+          includePaths: ${'test/include_path test/include\ path'}
           packageTimeout: 5m
           globalTimeout: 10m
           # TODO: add tests for package mode
