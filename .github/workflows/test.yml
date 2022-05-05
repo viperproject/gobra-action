@@ -30,7 +30,7 @@ jobs:
       - name: Verify Gobra files (recursive mode)
         uses: ./
         with:
-          projectLocation: 'test/'
+          projectLocation: 'gobra-action/test/'
           excludePackages: 'main'
           recursive: '1'
           packageTimeout: 2m
