@@ -24,7 +24,7 @@ getFileListInDir () (
     # the tail of the list of arguments (i.e., the args without
     # the function name and the first argument (LOCATION) are
     # the list of paths to be processed.
-    echo "$(echo "${@:2}" | xargs realpath | sed -e 's/^/\"/g' | sed -e 's/$/\"/g' | tr '\n' ' ')"
+    echo "$(echo "${@:2}" | xargs realpath -e | sed -e 's/^/\"/g' | sed -e 's/$/\"/g' | tr '\n' ' ')"
 )
 
 if [[ $INPUT_PROJECTLOCATION ]]; then
