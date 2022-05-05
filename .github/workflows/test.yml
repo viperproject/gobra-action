@@ -27,5 +27,5 @@ jobs:
         with:
           packages: 'test/packages_test/test1/'
           packageTimeout: 2m
-      - name: Verify Gobra files (recursive mode)
+      #- name: Verify Gobra files (recursive mode)
           # TODO: add tests for recursive mode
