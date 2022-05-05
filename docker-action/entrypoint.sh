@@ -13,11 +13,8 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 RESET='\033[0m' # No Color
 
-# TODO: Deprecate?
-REPOSITORY_NAME=$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//")
-
 echo "[DEBUG] Github Workspace: $GITHUB_WORKSPACE" > $DEBUG_OUT
-ls $GITHUB_WORKSPACE
+REPOSITORY_NAME=$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//")
 
 # returns the absolute path from a base path ($1) and a list of paths relative
 # to the base path (${@:2}). Also works if one of the argument paths is an
@@ -36,6 +33,8 @@ if [[ $INPUT_PROJECTLOCATION ]]; then
 else
     PROJECT_LOCATION="$GITHUB_WORKSPACE/$REPOSITORY_NAME"
 fi
+
+ls $PROJECT_LOCATION
 
 GOBRA_JAR="/gobra/gobra.jar"
 JAVA_ARGS="-Xss$INPUT_JAVAXSS -Xmx$INPUT_JAVAXMX -jar $GOBRA_JAR"
