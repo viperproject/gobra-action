@@ -13,6 +13,7 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 RESET='\033[0m' # No Color
 
+# TODO: Deprecate?
 REPOSITORY_NAME=$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//")
 
 # returns the absolute path from a base path ($1) and a list of paths relative
@@ -24,14 +25,13 @@ getFileListInDir () (
     # the tail of the list of arguments (i.e., the args without
     # the function name and the first argument (LOCATION) are
     # the list of paths to be processed.
-    # echo "$(echo "${@:2}" | xargs realpath -e | sed -e 's/^/\"/g' | sed -e 's/$/\"/g' | tr '\n' ' ')"
-    echo "$(echo "${@:2}" | xargs realpath -e | sed 's/ /\\ /g' | tr '\n' ' ')"
+    echo "$(echo "${@:2}" | xargs realpath | sed -e 's/^/\"/g' | sed -e 's/$/\"/g' | tr '\n' ' ')"
 )
 
 if [[ $INPUT_PROJECTLOCATION ]]; then
     PROJECT_LOCATION="$GITHUB_WORKSPACE/$INPUT_PROJECTLOCATION"
 else
-    PROJECT_LOCATION="$GITHUB_WORKSPACE/$REPOSITORY_NAME"
+    PROJECT_LOCATION="$GITHUB_WORKSPACE/"
 fi
 
 GOBRA_JAR="/gobra/gobra.jar"
