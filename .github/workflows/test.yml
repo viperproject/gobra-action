@@ -17,22 +17,22 @@ jobs:
       - name: Checkout Project
         uses: actions/checkout@v3
       - name: Verify Gobra files (files mode)
+        continue-on-error: true
         uses: ./
         with:
-          continue-on-error: true
           files: 'test/files_test/file1.go test/files_test/file2.gobra'
           includePaths: 'test/include_path test/include\ path'
           packageTimeout: 2m
       - name: Verify Gobra files (package mode)
+        continue-on-error: true
         uses: ./
         with:
-          continue-on-error: true
           packages: 'test/packages_test/test1/'
           packageTimeout: 2m
       - name: Verify Gobra files (recursive mode)
+        continue-on-error: true
         uses: ./
         with:
-          continue-on-error: true
           projectLocation: './test/'
           recursive: '1'
           packageTimeout: 2m
