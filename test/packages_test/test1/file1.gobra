@@ -1,0 +1,11 @@
+// Any copyright is dedicated to the Public Domain.
+// http://creativecommons.org/publicdomain/zero/1.0/
+
+package test1
+
+preserves p.Mem()
+func (p *Point) SetX(x int) {
+    unfold p.Mem()
+    p.x = x
+    fold p.Mem()
+}

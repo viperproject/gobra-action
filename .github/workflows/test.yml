@@ -20,9 +20,10 @@ jobs:
         uses: ./
         with:
           files: 'test/files_test/file1.go test/files_test/file2.gobra'
-          # TODO: add more imports
           includePaths: 'test/include_path test/include\ path'
-          packageTimeout: 5m
-          globalTimeout: 10m
-          # TODO: add tests for package mode
+          packageTimeout: 2m
+      - name: Verify Gobra files (package mode)
+          packages: 'test/packages_test/test1/'
+          packageTimeout: 2m
+      - name: Verify Gobra files (recursive mode)
           # TODO: add tests for recursive mode
