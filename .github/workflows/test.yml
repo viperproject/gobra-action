@@ -31,5 +31,6 @@ jobs:
         uses: ./
         with:
           projectLocation: 'test/'
+          packages: 'test1'
           recursive: '1'
           packageTimeout: 2m
