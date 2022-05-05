@@ -40,10 +40,11 @@ if [[ $INPUT_RECURSIVE -eq 1 ]]; then
 fi
 
 if [[ $INPUT_FILES ]]; then
+    RESOLVED_PATHS="$(getFileListInDir $PROJECT_LOCATION $INPUT_FILES)"
     echo "Project Location: $PROJECT_LOCATION"
     echo "Input packages: $INPUT_FILES"
     echo "Resolved paths: $RESOLVED_PATHS"
-    GOBRA_ARGS="-i $(getFileListInDir $PROJECT_LOCATION $INPUT_FILES) $GOBRA_ARGS"
+    GOBRA_ARGS="-i $RESOLVED_PATHS $GOBRA_ARGS"
 fi
 
 if [[ $INPUT_PACKAGES ]]; then
