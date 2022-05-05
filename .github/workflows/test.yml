@@ -20,13 +20,13 @@ jobs:
         uses: ./
         with:
           files: 'test/files_test/file1.go test/files_test/file2.gobra'
-          includePaths: 'test/include_path test/include\ path'
+          includePaths: 'test/include_path'
           packageTimeout: 2m
-#      - name: Verify Gobra files (package mode)
-#        uses: ./
-#        with:
-#          packages: 'test/packages_test/test1/'
-#          packageTimeout: 2m
+      - name: Verify Gobra files (package mode)
+        uses: ./
+        with:
+          packages: 'test/packages_test/test1/'
+          packageTimeout: 2m
       - name: Verify Gobra files (recursive mode)
         uses: ./
         with:

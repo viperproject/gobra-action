@@ -18,14 +18,14 @@ REPOSITORY_NAME=$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/
 
 # returns the absolute path from a base path ($1) and a list of paths relative
 # to the base path (${@:2}). Also works if one of the argument paths is an
-# absolute path. Note: also handles paths that contain a space.
+# absolute path. Note: does not handle paths that contain a space.
 getFileListInDir () (
     local LOCATION=$1
     cd -- "$LOCATION"
     # the tail of the list of arguments (i.e., the args without
     # the function name and the first argument (LOCATION) are
     # the list of paths to be processed.
-    echo "$(echo "${@:2}" | xargs realpath | sed -e 's/^/\"/g' | sed -e 's/$/\"/g' | tr '\n' ' ')"
+    echo "$(echo "${@:2}" | xargs realpath | tr '\n' ' ')"
 )
 
 if [[ $INPUT_PROJECTLOCATION ]]; then
@@ -33,8 +33,6 @@ if [[ $INPUT_PROJECTLOCATION ]]; then
 else
     PROJECT_LOCATION="$GITHUB_WORKSPACE/$REPOSITORY_NAME"
 fi
-
-ls $PROJECT_LOCATION
 
 GOBRA_JAR="/gobra/gobra.jar"
 JAVA_ARGS="-Xss$INPUT_JAVAXSS -Xmx$INPUT_JAVAXMX -jar $GOBRA_JAR"
