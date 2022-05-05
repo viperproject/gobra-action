@@ -33,6 +33,6 @@ jobs:
         continue-on-error: true
         uses: ./
         with:
-          projectLocation: './test/'
+          projectLocation: 'test/'
           recursive: '1'
           packageTimeout: 2m
