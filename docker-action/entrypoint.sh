@@ -21,6 +21,7 @@ REPOSITORY_NAME=$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/
 getFileListInDir () (
     local LOCATION=$1
     cd -- "$LOCATION"
+    ls -- "$LOCATION"
     # the tail of the list of arguments (i.e., the args without
     # the function name and the first argument (LOCATION) are
     # the list of paths to be processed.
