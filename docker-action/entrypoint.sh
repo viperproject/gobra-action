@@ -1,5 +1,13 @@
 #!/bin/bash
 
+DEBUG_MODE=1
+
+if [[ $DEBUG_MODE -eq 1 ]]; then
+    DEBUG_OUT="/dev/stdout"
+else
+    DEBUG_OUT="/dev/nil"
+fi
+
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -41,9 +49,9 @@ fi
 
 if [[ $INPUT_FILES ]]; then
     RESOLVED_PATHS="$(getFileListInDir $PROJECT_LOCATION $INPUT_FILES)"
-    echo "Project Location: $PROJECT_LOCATION"
-    echo "Input packages: $INPUT_FILES"
-    echo "Resolved paths: $RESOLVED_PATHS"
+    echo "[DEBUG] Project Location: $PROJECT_LOCATION" > $DEBUG_OUT
+    echo "[DEBUG] Input Files: $INPUT_FILES" > $DEBUG_OUT
+    echo "[DEBUG] Resolved Paths: $RESOLVED_PATHS" > $DEBUG_OUT
     GOBRA_ARGS="-i $RESOLVED_PATHS $GOBRA_ARGS"
 fi
 
@@ -60,7 +68,11 @@ if [[ $INPUT_PACKAGES ]]; then
 fi
 
 if [[ $INPUT_INCLUDEPATHS ]]; then
-    GOBRA_ARGS="$GOBRA_ARGS -I $(getFileListInDir $PROJECT_LOCATION $INPUT_INCLUDEPATHS)"
+    RESOLVED_PATHS=$(getFileListInDir $PROJECT_LOCATION $INPUT_INCLUDEPATHS)
+    echo "[DEBUG] Project Location: $PROJECT_LOCATION" > $DEBUG_OUT
+    echo "[DEBUG] Include Paths: $INPUT_INCLUDEPATHS" > $DEBUG_OUT
+    echo "[DEBUG] Resolved Paths: $RESOLVED_PATHS" > $DEBUG_OUT
+    GOBRA_ARGS="$GOBRA_ARGS -I $RESOLVED_PATHS"
 else
     GOBRA_ARGS="$GOBRA_ARGS -I $PROJECT_LOCATION" 
 fi
