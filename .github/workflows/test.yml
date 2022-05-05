@@ -19,13 +19,20 @@ jobs:
       - name: Verify Gobra files (files mode)
         uses: ./
         with:
+          continue-on-error: true
           files: 'test/files_test/file1.go test/files_test/file2.gobra'
           includePaths: 'test/include_path test/include\ path'
           packageTimeout: 2m
       - name: Verify Gobra files (package mode)
         uses: ./
         with:
+          continue-on-error: true
           packages: 'test/packages_test/test1/'
           packageTimeout: 2m
-      #- name: Verify Gobra files (recursive mode)
-          # TODO: add tests for recursive mode
+      - name: Verify Gobra files (recursive mode)
+        uses: ./
+        with:
+          continue-on-error: true
+          projectLocation: './test/'
+          recursive: '1'
+          packageTimeout: 2m
