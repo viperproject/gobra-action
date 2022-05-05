@@ -41,7 +41,7 @@ fi
 
 if [[ $INPUT_FILES ]]; then
     echo "Project Location: $PROJECT_LOCATION"
-    echo "Input packages: $INPUT_PACKAGES"
+    echo "Input packages: $INPUT_FILES"
     echo "Resolved paths: $RESOLVED_PATHS"
     GOBRA_ARGS="-i $(getFileListInDir $PROJECT_LOCATION $INPUT_FILES) $GOBRA_ARGS"
 fi
