@@ -23,6 +23,8 @@ jobs:
           includePaths: 'test/include_path test/include\ path'
           packageTimeout: 2m
       - name: Verify Gobra files (package mode)
+        uses: ./
+        with:
           packages: 'test/packages_test/test1/'
           packageTimeout: 2m
       - name: Verify Gobra files (recursive mode)
