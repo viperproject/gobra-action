@@ -27,9 +27,9 @@ jobs:
 #        with:
 #          packages: 'test/packages_test/test1/'
 #          packageTimeout: 2m
-#      - name: Verify Gobra files (recursive mode)
-#        uses: ./
-#        with:
-#          projectLocation: 'test/'
-#          recursive: '1'
-#          packageTimeout: 2m
+      - name: Verify Gobra files (recursive mode)
+        uses: ./
+        with:
+          projectLocation: 'test/'
+          recursive: '1'
+          packageTimeout: 2m

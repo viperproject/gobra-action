@@ -16,6 +16,9 @@ RESET='\033[0m' # No Color
 # TODO: Deprecate?
 REPOSITORY_NAME=$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/:refs//")
 
+echo "[DEBUG] Github Workspace: $GITHUB_WORKSPACE" > DEBUG_OUT
+ls $GITHUB_WORKSPACE
+
 # returns the absolute path from a base path ($1) and a list of paths relative
 # to the base path (${@:2}). Also works if one of the argument paths is an
 # absolute path. Note: also handles paths that contain a space.
