@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DEBUG_MODE=1
+DEBUG_MODE=0
 
 if [[ $DEBUG_MODE -eq 1 ]]; then
     DEBUG_OUT="/dev/stdout"
@@ -51,12 +51,7 @@ if [[ $INPUT_FILES ]]; then
 fi
 
 if [[ $INPUT_PACKAGES ]]; then
-    if [[ $INPUT_RECURSIVE -eq 1 ]]; then
-        # If in recursive mode, INPUT_PACKAGES are package names
-        GOBRA_ARGS="-p $INPUT_PACKAGES $GOBRA_ARGS"
-    else
-        # If not in recursive mode, INPUT_PACKAGES are the paths to
-        # the packages
+        # INPUT_PACKAGES are paths to packages
         RESOLVED_PATHS="$(getFileListInDir $PROJECT_LOCATION $INPUT_PACKAGES)"
         GOBRA_ARGS="-p $RESOLVED_PATHS $GOBRA_ARGS"
     fi
