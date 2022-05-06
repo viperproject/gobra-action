@@ -34,3 +34,11 @@ jobs:
           excludePackages: 'main'
           recursive: '1'
           packageTimeout: 2m
+      - name: Verify Gobra files (recursive and headerOnly mode)
+        uses: ./
+        with:
+          projectLocation: 'gobra-action/test/'
+          excludePackages: 'main'
+          recursive: '1'
+          headerOnly: '1'
+          packageTimeout: 2m
