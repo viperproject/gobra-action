@@ -51,10 +51,9 @@ if [[ $INPUT_FILES ]]; then
 fi
 
 if [[ $INPUT_PACKAGES ]]; then
-        # INPUT_PACKAGES are paths to packages
-        RESOLVED_PATHS="$(getFileListInDir $PROJECT_LOCATION $INPUT_PACKAGES)"
-        GOBRA_ARGS="-p $RESOLVED_PATHS $GOBRA_ARGS"
-    fi
+    # INPUT_PACKAGES are paths to packages
+    RESOLVED_PATHS="$(getFileListInDir $PROJECT_LOCATION $INPUT_PACKAGES)"
+    GOBRA_ARGS="-p $RESOLVED_PATHS $GOBRA_ARGS"
 fi
 
 if [[ $INPUT_INCLUDEPATHS ]]; then
