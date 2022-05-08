@@ -28,18 +28,18 @@ getFileListInDir () (
     echo "$(echo "${@:2}" | xargs realpath | tr '\n' ' ')"
 )
 
+GOBRA_JAR="/gobra/gobra.jar"
+JAVA_ARGS="-Xss$INPUT_JAVAXSS -Xmx$INPUT_JAVAXMX -jar $GOBRA_JAR"
+GOBRA_ARGS="--backend $INPUT_VIPERBACKEND --chop $INPUT_CHOP"
+
 if [[ $INPUT_PROJECTLOCATION ]]; then
     PROJECT_LOCATION="$GITHUB_WORKSPACE/$INPUT_PROJECTLOCATION"
 else
     PROJECT_LOCATION="$GITHUB_WORKSPACE/$REPOSITORY_NAME"
 fi
 
-GOBRA_JAR="/gobra/gobra.jar"
-JAVA_ARGS="-Xss$INPUT_JAVAXSS -Xmx$INPUT_JAVAXMX -jar $GOBRA_JAR"
-GOBRA_ARGS="--backend $INPUT_VIPERBACKEND --chop $INPUT_CHOP"
-
 if [[ $INPUT_RECURSIVE -eq 1 ]]; then
-    GOBRA_ARGS="--recursive $GOBRA_ARGS"
+    GOBRA_ARGS="--recursive --projectRoot $PROJECT_LOCATION $GOBRA_ARGS"
 fi
 
 if [[ $INPUT_FILES ]]; then
