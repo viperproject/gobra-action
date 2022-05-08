@@ -38,10 +38,8 @@ else
     PROJECT_LOCATION="$GITHUB_WORKSPACE/$REPOSITORY_NAME"
 fi
 
-GOBRA_ARGS="$GOBRA_ARGS --projectRoot $PROJECT_LOCATION"
-
 if [[ $INPUT_RECURSIVE -eq 1 ]]; then
-    GOBRA_ARGS="--recursive $GOBRA_ARGS"
+    GOBRA_ARGS="--recursive --projectRoot $PROJECT_LOCATION $GOBRA_ARGS"
 fi
 
 if [[ $INPUT_FILES ]]; then
