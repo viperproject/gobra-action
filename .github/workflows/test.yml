@@ -1,0 +1,44 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+# Copyright (c) 2011-2022 ETH Zurich.
+
+name: test
+
+on:
+  push: # run this workflow on every push
+  pull_request: # run this workflow on every pull_request
+
+jobs:
+  setup-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Project
+        uses: actions/checkout@v3
+      - name: Verify Gobra files (files mode)
+        uses: ./
+        with:
+          files: 'test/files_test/file1.go test/files_test/file2.gobra'
+          includePaths: 'test/include_path'
+          packageTimeout: 2m
+      - name: Verify Gobra files (package mode)
+        uses: ./
+        with:
+          packages: 'test/packages_test/test1/'
+          packageTimeout: 2m
+      - name: Verify Gobra files (recursive mode)
+        uses: ./
+        with:
+          projectLocation: 'gobra-action/test/'
+          excludePackages: 'main'
+          recursive: '1'
+          packageTimeout: 2m
+      - name: Verify Gobra files (recursive and headerOnly mode)
+        uses: ./
+        with:
+          projectLocation: 'gobra-action/test/'
+          excludePackages: 'main'
+          recursive: '1'
+          headerOnly: '1'
+          packageTimeout: 2m
