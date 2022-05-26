@@ -53,7 +53,7 @@ inputs:
   imageVersion:
     description: 'Version of the base image to be used.'
     required: true
-    default: 'v22.05'
+    default: 'v22.05.01'
   headerOnly:
     description: 'Whether Gobra should only verify files with the header "// +gobra".'
     required: false
