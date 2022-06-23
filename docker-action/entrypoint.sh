@@ -21,7 +21,7 @@ REPOSITORY_NAME=$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/
 # absolute path. Note: does not handle paths that contain a space.
 getFileListInDir () (
     local LOCATION=$1
-    cd -- "$LOCATION"
+    cd -- "$LOCATION" || exit
     # the tail of the list of arguments (i.e., the args without
     # the function name and the first argument (LOCATION) are
     # the list of paths to be processed.
@@ -43,7 +43,7 @@ if [[ $INPUT_RECURSIVE -eq 1 ]]; then
 fi
 
 if [[ $INPUT_FILES ]]; then
-    RESOLVED_PATHS="$(getFileListInDir $PROJECT_LOCATION $INPUT_FILES)"
+    RESOLVED_PATHS="$(getFileListInDir "$PROJECT_LOCATION" "$INPUT_FILES")"
     echo "[DEBUG] Project Location: $PROJECT_LOCATION" > $DEBUG_OUT
     echo "[DEBUG] Input Files: $INPUT_FILES" > $DEBUG_OUT
     echo "[DEBUG] Resolved Paths: $RESOLVED_PATHS" > $DEBUG_OUT
@@ -52,12 +52,12 @@ fi
 
 if [[ $INPUT_PACKAGES ]]; then
     # INPUT_PACKAGES are paths to packages
-    RESOLVED_PATHS="$(getFileListInDir $PROJECT_LOCATION $INPUT_PACKAGES)"
+    RESOLVED_PATHS="$(getFileListInDir "$PROJECT_LOCATION" "$INPUT_PACKAGES")"
     GOBRA_ARGS="-p $RESOLVED_PATHS $GOBRA_ARGS"
 fi
 
 if [[ $INPUT_INCLUDEPATHS ]]; then
-    RESOLVED_PATHS=$(getFileListInDir $PROJECT_LOCATION $INPUT_INCLUDEPATHS)
+    RESOLVED_PATHS=$(getFileListInDir "$PROJECT_LOCATION" "$INPUT_INCLUDEPATHS")
     echo "[DEBUG] Project Location: $PROJECT_LOCATION" > $DEBUG_OUT
     echo "[DEBUG] Include Paths: $INPUT_INCLUDEPATHS" > $DEBUG_OUT
     echo "[DEBUG] Resolved Paths: $RESOLVED_PATHS" > $DEBUG_OUT
@@ -95,14 +95,19 @@ else
     GOBRA_ARGS="$GOBRA_ARGS --noassumeInjectivityOnInhale"
 fi
 
+if [[ $INPUT_CHECKCONSISTENCY -eq 1 ]]; then
+    GOBRA_ARGS="$GOBRA_ARGS --checkConsistency"
+fi
+
+
 START_TIME=$SECONDS
 EXIT_CODE=0
 
 CMD="java $JAVA_ARGS $GOBRA_ARGS"
 
-echo $CMD
+echo "$CMD"
 
-if timeout $INPUT_GLOBALTIMEOUT $CMD; then
+if timeout "$INPUT_GLOBALTIMEOUT" "$CMD"; then
     echo -e "${GREEN}Verification completed successfully${RESET}"
 else
     EXIT_CODE=$?
@@ -113,7 +118,7 @@ else
     fi
 fi
 
-TIME_PASSED=$[ $SECONDS-$START_TIME ]
+TIME_PASSED=$((SECONDS-START_TIME))
 
 echo "::set-output name=time::$TIME_PASSED"
 

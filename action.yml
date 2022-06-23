@@ -65,6 +65,10 @@ inputs:
     description: 'Assume injectivity of the receiver expression when inhaling quantified permissions, instead of checking it, like in Viper versions previous to 2022.02.'
     required: false
     default: '1'
+  checkConsistency:
+    decription: 'Enforces additional consistency checks in the generated Viper code. Helpful to debug problems with the encoding of Gobra.'
+    required: false
+    default: '0'
 outputs:
   time:
     description: 'Total verification time in seconds'
