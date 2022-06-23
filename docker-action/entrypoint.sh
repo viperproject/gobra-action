@@ -95,6 +95,11 @@ else
     GOBRA_ARGS="$GOBRA_ARGS --noassumeInjectivityOnInhale"
 fi
 
+if [[ $INPUT_CHECKCONSISTENCY -eq 1 ]]; then
+    GOBRA_ARGS="$GOBRA_ARGS --checkConsistency"
+fi
+
+
 START_TIME=$SECONDS
 EXIT_CODE=0
 
