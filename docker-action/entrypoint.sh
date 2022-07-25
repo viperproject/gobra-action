@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DEBUG_MODE=0
+DEBUG_MODE=1
 
 if [[ $DEBUG_MODE -eq 1 ]]; then
     DEBUG_OUT="/dev/stdout"
@@ -121,5 +121,9 @@ fi
 TIME_PASSED=$[ $SECONDS-$START_TIME ]
 
 echo "::set-output name=time::$TIME_PASSED"
+
+echo "[DEBUG] Contents of /gobra/:" > $DEBUG_OUT
+ls -la /gobra/ > $DEBUG_OUT
+cp /gobra/stats.json /stats/.
 
 exit $EXIT_CODE
