@@ -137,15 +137,5 @@ echo "[DEBUG] Contents of /gobra/:" > $DEBUG_OUT
 ls -la /gobra/ > $DEBUG_OUT
 echo "[DEBUG] Contents of /stats/:" > $DEBUG_OUT
 ls -la /stats/ > $DEBUG_OUT
-echo "[DEBUG] Contents of github workspace ($GITHUB_WORKSPACE):" > $DEBUG_OUT
-ls -la $GITHUB_WORKSPACE > $DEBUG_OUT
-echo "[DEBUG] Contents of $GITHUB_WORKSPACE/gobra-action:" > $DEBUG_OUT
-ls -la $GITHUB_WORKSPACE/gobra-action > $DEBUG_OUT
-echo "[DEBUG] Contents of $GITHUB_WORKSPACE/tmp:" > $DEBUG_OUT
-ls -la $GITHUB_WORKSPACE/tmp > $DEBUG_OUT
-echo "[DEBUG] Contents of /:" > $DEBUG_OUT
-ls -la / > $DEBUG_OUT
-echo "[DEBUG] Find stats.json"
-find / -type f -name stats.json
 
 exit $EXIT_CODE
