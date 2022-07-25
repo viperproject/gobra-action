@@ -121,7 +121,7 @@ if timeout $INPUT_GLOBALTIMEOUT $CMD; then
     # if verification succeeded and the user expects a stats file, then
     # put it in the expected place
     if [[ $INPUT_STATSFILE ]]; then
-        mv /tmp/stats.json $STATS_TARGET.
+        mv /tmp/stats.json $STATS_TARGET
     fi
 else
     EXIT_CODE=$?
