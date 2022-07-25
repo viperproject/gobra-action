@@ -101,11 +101,10 @@ fi
 
 if [[ $INPUT_STATSFILE ]]; then
     # TODO: explain why is stats and not sth else, put stats in some var
-    # mkdir /tmp/stats/
+    echo "[DEBUG] path to stats file was passed" > $DEBUG_OUT
     GOBRA_ARGS="$GOBRA_ARGS -g /tmp/"
-    echo "pass stats file"
 else
-    echo "Did not pass stats file"
+    echo "[DEBUG] path to stats file was NOT passed" > $DEBUG_OUT
 fi
 
 START_TIME=$SECONDS
