@@ -99,6 +99,10 @@ if [[ $INPUT_CHECKCONSISTENCY -eq 1 ]]; then
     GOBRA_ARGS="$GOBRA_ARGS --checkConsistency"
 fi
 
+if [[ $INPUT_STATUSFILE ]]; then
+    # TODO: explain why is stats and not sth else, put stats in some var
+    GOBRA_ARGS="$GOBRA_ARGS -g /stats/"
+fi
 
 START_TIME=$SECONDS
 EXIT_CODE=0
@@ -124,7 +128,8 @@ echo "::set-output name=time::$TIME_PASSED"
 
 echo "[DEBUG] Contents of /gobra/:" > $DEBUG_OUT
 ls -la /gobra/ > $DEBUG_OUT
-#cp /gobra/stats.json /stats/.
+echo "[DEBUG] Contents of /stats/:" > $DEBUG_OUT
+ls -la /stats/ > $DEBUG_OUT
 echo "[DEBUG] Contents of github workspace ($GITHUB_WORKSPACE):" > $DEBUG_OUT
 ls -la $GITHUB_WORKSPACE > $DEBUG_OUT
 echo "[DEBUG] Contents of $GITHUB_WORKSPACE/gobra-action:" > $DEBUG_OUT
@@ -133,8 +138,6 @@ echo "[DEBUG] Contents of $GITHUB_WORKSPACE/tmp:" > $DEBUG_OUT
 ls -la $GITHUB_WORKSPACE/tmp > $DEBUG_OUT
 echo "[DEBUG] Contents of /:" > $DEBUG_OUT
 ls -la / > $DEBUG_OUT
-echo "[DEBUG] Contents of /gobra:" > $DEBUG_OUT
-ls -la /gobra > $DEBUG_OUT
 echo "[DEBUG] Find stats.json"
 find / -type f -name stats.json
 
