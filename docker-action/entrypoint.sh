@@ -101,8 +101,8 @@ fi
 
 if [[ $INPUT_STATUSFILE ]]; then
     # TODO: explain why is stats and not sth else, put stats in some var
-    # mkdir /stats/
-    GOBRA_ARGS="$GOBRA_ARGS -g /tmp/stats/"
+    # mkdir /tmp/stats/
+    GOBRA_ARGS="$GOBRA_ARGS -g /tmp/"
 fi
 
 START_TIME=$SECONDS
