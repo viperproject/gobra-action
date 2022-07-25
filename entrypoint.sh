@@ -4,7 +4,7 @@ echo "Creating a docker image with Gobra image tag: $INPUT_IMAGEVERSION"
 docker build -t docker-action --build-arg "image_version=$INPUT_IMAGEVERSION" --build-arg "image_name=$INPUT_IMAGENAME" /docker-action
 
 # Directory where Gobra should write a stats.json file
-$STATS_TARGET="/stats/"
+export $STATS_TARGET="/stats/"
 
 echo "Run Docker Action container"
 docker run -e INPUT_CACHING -e INPUT_PROJECTLOCATION -e INPUT_INCLUDEPATHS -e INPUT_FILES -e INPUT_PACKAGES -e INPUT_EXCLUDEPACKAGES -e INPUT_CHOP \
