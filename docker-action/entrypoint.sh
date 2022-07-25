@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DEBUG_MODE=1
+DEBUG_MODE=0
 
 if [[ $DEBUG_MODE -eq 1 ]]; then
     DEBUG_OUT="/dev/stdout"
@@ -100,7 +100,9 @@ if [[ $INPUT_CHECKCONSISTENCY -eq 1 ]]; then
 fi
 
 if [[ $INPUT_STATSFILE ]]; then
-    # TODO: explain why is stats and not sth else, put stats in some var
+    # We write the file to /tmp/ (which is easier then making gobra write directly
+    # to the STATS_TARGET, as doing so often causes Gobra to not generate a file) due
+    # to the lack of permissions. We later move this file to correct destination.
     echo "[DEBUG] path to stats file was passed" > $DEBUG_OUT
     GOBRA_ARGS="$GOBRA_ARGS -g /tmp/"
 else
@@ -119,7 +121,7 @@ if timeout $INPUT_GLOBALTIMEOUT $CMD; then
     # if verification succeeded and the user expects a stats file, then
     # put it in the expected place
     if [[ $INPUT_STATSFILE ]]; then
-        mv /tmp/stats.json /stats/.
+        mv /tmp/stats.json $STATS_TARGET.
     fi
 else
     EXIT_CODE=$?
@@ -138,7 +140,7 @@ echo "[DEBUG] Contents of /tmp/:" > $DEBUG_OUT
 ls -la /tmp/ > $DEBUG_OUT
 echo "[DEBUG] Contents of /gobra/:" > $DEBUG_OUT
 ls -la /gobra/ > $DEBUG_OUT
-echo "[DEBUG] Contents of /stats/:" > $DEBUG_OUT
-ls -la /stats/ > $DEBUG_OUT
+echo "[DEBUG] Contents of $STATS_TARGET:" > $DEBUG_OUT
+ls -la $STATS_TARGET > $DEBUG_OUT
 
 exit $EXIT_CODE
