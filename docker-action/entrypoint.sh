@@ -127,5 +127,11 @@ ls -la /gobra/ > $DEBUG_OUT
 #cp /gobra/stats.json /stats/.
 echo "[DEBUG] Contents of github workspace ($GITHUB_WORKSPACE):" > $DEBUG_OUT
 ls -la $GITHUB_WORKSPACE > $DEBUG_OUT
+echo "[DEBUG] Contents of $GITHUB_WORKSPACE/gobra-action:" > $DEBUG_OUT
+ls -la $GITHUB_WORKSPACE/gobra-action > $DEBUG_OUT
+echo "[DEBUG] Contents of $GITHUB_WORKSPACE/tmp:" > $DEBUG_OUT
+ls -la $GITHUB_WORKSPACE/tmp > $DEBUG_OUT
+echo "[DEBUG] Contents of /:" > $DEBUG_OUT
+ls -la / > $DEBUG_OUT
 
 exit $EXIT_CODE
