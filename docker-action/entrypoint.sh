@@ -133,5 +133,7 @@ echo "[DEBUG] Contents of $GITHUB_WORKSPACE/tmp:" > $DEBUG_OUT
 ls -la $GITHUB_WORKSPACE/tmp > $DEBUG_OUT
 echo "[DEBUG] Contents of /:" > $DEBUG_OUT
 ls -la / > $DEBUG_OUT
+echo "[DEBUG] Contents of /gobra:" > $DEBUG_OUT
+ls -la /gobra > $DEBUG_OUT
 
 exit $EXIT_CODE
