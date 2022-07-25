@@ -124,6 +124,8 @@ echo "::set-output name=time::$TIME_PASSED"
 
 echo "[DEBUG] Contents of /gobra/:" > $DEBUG_OUT
 ls -la /gobra/ > $DEBUG_OUT
-cp /gobra/stats.json /stats/.
+#cp /gobra/stats.json /stats/.
+echo "[DEBUG] Contents of github workspace ($GITHUB_WORKSPACE):" > $DEBUG_OUT
+ls -la $GITHUB_WORKSPACE > $DEBUG_OUT
 
 exit $EXIT_CODE
