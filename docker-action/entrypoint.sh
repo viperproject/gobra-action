@@ -99,13 +99,13 @@ if [[ $INPUT_CHECKCONSISTENCY -eq 1 ]]; then
     GOBRA_ARGS="$GOBRA_ARGS --checkConsistency"
 fi
 
-if [[ $INPUT_STATUSFILE ]]; then
+if [[ $INPUT_STATSFILE ]]; then
     # TODO: explain why is stats and not sth else, put stats in some var
     # mkdir /tmp/stats/
     GOBRA_ARGS="$GOBRA_ARGS -g /tmp/"
-    echo "pass status file"
+    echo "pass stats file"
 else
-    echo "Did not pass status file"
+    echo "Did not pass stats file"
 fi
 
 START_TIME=$SECONDS
