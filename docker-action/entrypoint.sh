@@ -103,6 +103,9 @@ if [[ $INPUT_STATUSFILE ]]; then
     # TODO: explain why is stats and not sth else, put stats in some var
     # mkdir /tmp/stats/
     GOBRA_ARGS="$GOBRA_ARGS -g /tmp/"
+    echo "pass status file"
+else
+    echo "Did not pass status file"
 fi
 
 START_TIME=$SECONDS
