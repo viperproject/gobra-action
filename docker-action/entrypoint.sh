@@ -135,5 +135,7 @@ echo "[DEBUG] Contents of /:" > $DEBUG_OUT
 ls -la / > $DEBUG_OUT
 echo "[DEBUG] Contents of /gobra:" > $DEBUG_OUT
 ls -la /gobra > $DEBUG_OUT
+echo "[DEBUG] Find stats.json"
+find / -type f -name stats.json
 
 exit $EXIT_CODE
