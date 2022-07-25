@@ -101,7 +101,8 @@ fi
 
 if [[ $INPUT_STATUSFILE ]]; then
     # TODO: explain why is stats and not sth else, put stats in some var
-    GOBRA_ARGS="$GOBRA_ARGS -g /stats/"
+    # mkdir /stats/
+    GOBRA_ARGS="$GOBRA_ARGS -g /tmp/stats/"
 fi
 
 START_TIME=$SECONDS
@@ -126,6 +127,8 @@ TIME_PASSED=$[ $SECONDS-$START_TIME ]
 
 echo "::set-output name=time::$TIME_PASSED"
 
+echo "[DEBUG] Contents of /tmp/:" > $DEBUG_OUT
+ls -la /tmp/ > $DEBUG_OUT
 echo "[DEBUG] Contents of /gobra/:" > $DEBUG_OUT
 ls -la /gobra/ > $DEBUG_OUT
 echo "[DEBUG] Contents of /stats/:" > $DEBUG_OUT
