@@ -1,7 +1,5 @@
 #!/bin/sh
 
-DEBUG_MODE=1
-
 echo "Creating a docker image with Gobra image tag: $INPUT_IMAGEVERSION"
 docker build -t docker-action --build-arg "image_version=$INPUT_IMAGEVERSION" --build-arg "image_name=$INPUT_IMAGENAME" /docker-action
 
@@ -14,4 +12,3 @@ docker run -e INPUT_CACHING -e INPUT_PROJECTLOCATION -e INPUT_INCLUDEPATHS -e IN
   -e INPUT_MODULE -e INPUT_RECURSIVE -e INPUT_ASSUMEINJECTIVITYONINHALE -e INPUT_CHECKCONSISTENCY -e GITHUB_WORKSPACE -e GITHUB_REPOSITORY \
   -e STATS_TARGET -e DEBUG_MODE -v "$RUNNER_WORKSPACE:$GITHUB_WORKSPACE" -v "$INPUT_STATSFILE:$STATS_TARGET" \
   --workdir "$GITHUB_WORKSPACE" docker-action
-

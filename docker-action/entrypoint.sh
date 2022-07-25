@@ -1,5 +1,7 @@
 #!/bin/bash
 
+DEBUG_MODE=1
+
 if [[ $DEBUG_MODE -eq 1 ]]; then
     DEBUG_OUT="/dev/stdout"
 else
