@@ -99,6 +99,15 @@ if [[ $INPUT_CHECKCONSISTENCY -eq 1 ]]; then
     GOBRA_ARGS="$GOBRA_ARGS --checkConsistency"
 fi
 
+if [[ $INPUT_STATSFILE ]]; then
+    # We write the file to /tmp/ (which is easier then making gobra write directly
+    # to the STATS_TARGET, as doing so often causes Gobra to not generate a file) due
+    # to the lack of permissions. We later move this file to correct destination.
+    echo "[DEBUG] path to stats file was passed" > $DEBUG_OUT
+    GOBRA_ARGS="$GOBRA_ARGS -g /tmp/"
+else
+    echo "[DEBUG] path to stats file was NOT passed" > $DEBUG_OUT
+fi
 
 START_TIME=$SECONDS
 EXIT_CODE=0
@@ -109,6 +118,11 @@ echo $CMD
 
 if timeout $INPUT_GLOBALTIMEOUT $CMD; then
     echo -e "${GREEN}Verification completed successfully${RESET}"
+    # if verification succeeded and the user expects a stats file, then
+    # put it in the expected place
+    if [[ $INPUT_STATSFILE ]]; then
+        mv /tmp/stats.json $STATS_TARGET
+    fi
 else
     EXIT_CODE=$?
     if [ $EXIT_CODE -eq 124 ]; then
@@ -121,5 +135,12 @@ fi
 TIME_PASSED=$[ $SECONDS-$START_TIME ]
 
 echo "::set-output name=time::$TIME_PASSED"
+
+echo "[DEBUG] Contents of /tmp/:" > $DEBUG_OUT
+ls -la /tmp/ > $DEBUG_OUT
+echo "[DEBUG] Contents of /gobra/:" > $DEBUG_OUT
+ls -la /gobra/ > $DEBUG_OUT
+echo "[DEBUG] Contents of $STATS_TARGET:" > $DEBUG_OUT
+ls -la $STATS_TARGET > $DEBUG_OUT
 
 exit $EXIT_CODE
