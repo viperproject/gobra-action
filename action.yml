@@ -72,7 +72,7 @@ inputs:
   statsFile:
     description: 'Path where the generated stats.json file will be stored'
     required: false
-    default: '/gobra/'
+    default: '/stats/'
 outputs:
   time:
     description: 'Total verification time in seconds'
