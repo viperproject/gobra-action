@@ -116,6 +116,11 @@ echo $CMD
 
 if timeout $INPUT_GLOBALTIMEOUT $CMD; then
     echo -e "${GREEN}Verification completed successfully${RESET}"
+    # if verification succeeded and the user expects a stats file, then
+    # put it in the expected place
+    if [[ $INPUT_STATSFILE ]]; then
+        mv /tmp/stats.json /stats/.
+    fi
 else
     EXIT_CODE=$?
     if [ $EXIT_CODE -eq 124 ]; then
@@ -131,8 +136,6 @@ echo "::set-output name=time::$TIME_PASSED"
 
 echo "[DEBUG] Contents of /tmp/:" > $DEBUG_OUT
 ls -la /tmp/ > $DEBUG_OUT
-echo "[DEBUG] Contents of /tmp/stats/:" > $DEBUG_OUT
-ls -la /tmp/stats/ > $DEBUG_OUT
 echo "[DEBUG] Contents of /gobra/:" > $DEBUG_OUT
 ls -la /gobra/ > $DEBUG_OUT
 echo "[DEBUG] Contents of /stats/:" > $DEBUG_OUT
