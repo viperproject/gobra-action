@@ -129,6 +129,8 @@ echo "::set-output name=time::$TIME_PASSED"
 
 echo "[DEBUG] Contents of /tmp/:" > $DEBUG_OUT
 ls -la /tmp/ > $DEBUG_OUT
+echo "[DEBUG] Contents of /tmp/stats/:" > $DEBUG_OUT
+ls -la /tmp/stats/ > $DEBUG_OUT
 echo "[DEBUG] Contents of /gobra/:" > $DEBUG_OUT
 ls -la /gobra/ > $DEBUG_OUT
 echo "[DEBUG] Contents of /stats/:" > $DEBUG_OUT
