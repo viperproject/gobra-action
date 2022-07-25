@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DEBUG_MODE=1
+DEBUG_MODE=0
 
 if [[ $DEBUG_MODE -eq 1 ]]; then
     DEBUG_OUT="/dev/stdout"
