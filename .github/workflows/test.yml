@@ -34,6 +34,7 @@ jobs:
           excludePackages: 'main'
           recursive: '1'
           packageTimeout: 2m
+          checkConsistency: '1'
       - name: Verify Gobra files (recursive and headerOnly mode)
         uses: ./
         with:
@@ -42,3 +43,10 @@ jobs:
           recursive: '1'
           headerOnly: '1'
           packageTimeout: 2m
+          statsFile: '/stats/'
+      - name: Upload statistics report
+        uses: actions/upload-artifact@v2
+        with:
+          name: stats
+          path: /stats/stats.json
+          if-no-files-found: error # could also be 'warn' or 'ignore'
