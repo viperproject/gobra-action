@@ -45,7 +45,7 @@ jobs:
           packageTimeout: 2m
           statsFile: '/stats/'
       - name: Test that timeout reports an error
-        #continue-on-error: true
+        continue-on-error: true
         uses: ./
         with:
           files: 'test/timeout_test/matching_loop.gobra'
