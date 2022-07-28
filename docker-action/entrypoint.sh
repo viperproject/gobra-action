@@ -82,9 +82,11 @@ if [[ $INPUT_EXCLUDEPACKAGES ]]; then
     GOBRA_ARGS="$GOBRA_ARGS --excludePackages $INPUT_EXCLUDEPACKAGES"
 fi
 
-if [[ $INPUT_PACKAGETIMEOUT ]]; then
-    GOBRA_ARGS="$GOBRA_ARGS --packageTimeout $INPUT_PACKAGETIMEOUT"
-fi
+# We are explicitely skipping the usage of Gobra's package timeout, given that it
+# is currently very unreliable
+# if [[ $INPUT_PACKAGETIMEOUT ]]; then
+#    GOBRA_ARGS="$GOBRA_ARGS --packageTimeout $INPUT_PACKAGETIMEOUT"
+# fi
 
 # The default mode in Gobra might change in the future.
 # Having both options explicitly avoids subtle changes of
@@ -116,7 +118,7 @@ CMD="java $JAVA_ARGS $GOBRA_ARGS"
 
 echo $CMD
 
-timeout $INPUT_GLOBALTIMEOUT $CMD
+timeout $INPUT_TIMEOUT $CMD
 EXIT_CODE=$?
 
 if [ $EXIT_CODE -eq 0 ]; then

@@ -21,19 +21,19 @@ jobs:
         with:
           files: 'test/files_test/file1.go test/files_test/file2.gobra'
           includePaths: 'test/include_path'
-          packageTimeout: 2m
+          timeout: 2m
       - name: Verify Gobra files (package mode)
         uses: ./
         with:
           packages: 'test/packages_test/test1/'
-          packageTimeout: 2m
+          timeout: 2m
       - name: Verify Gobra files (recursive mode)
         uses: ./
         with:
           projectLocation: 'gobra-action/test/'
           excludePackages: 'main timeout_test'
           recursive: '1'
-          packageTimeout: 2m
+          timeout: 2m
           checkConsistency: '1'
       - name: Verify Gobra files (recursive and headerOnly mode)
         uses: ./
@@ -42,14 +42,14 @@ jobs:
           excludePackages: 'main'
           recursive: '1'
           headerOnly: '1'
-          packageTimeout: 2m
+          timeout: 2m
           statsFile: '/stats/'
       - name: Test that timeout reports an error
         continue-on-error: true
         uses: ./
         with:
           files: 'test/timeout_test/matching_loop.gobra'
-          packageTimeout: 10s
+          timeout: 10s
       - name: Upload statistics report
         uses: actions/upload-artifact@v2
         with:
