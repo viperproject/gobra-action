@@ -44,6 +44,12 @@ jobs:
           headerOnly: '1'
           packageTimeout: 2m
           statsFile: '/stats/'
+      - name: Test that timeout reports an error
+        uses: ./
+        with:
+          files: 'test/matching_loop.gobra'
+          packageTimeout: 10s
+          continue-on-error: true
       - name: Upload statistics report
         uses: actions/upload-artifact@v2
         with:
