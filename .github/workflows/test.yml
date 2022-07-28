@@ -31,7 +31,7 @@ jobs:
         uses: ./
         with:
           projectLocation: 'gobra-action/test/'
-          excludePackages: 'main'
+          excludePackages: 'main timeout_test'
           recursive: '1'
           packageTimeout: 2m
           checkConsistency: '1'
@@ -44,6 +44,12 @@ jobs:
           headerOnly: '1'
           packageTimeout: 2m
           statsFile: '/stats/'
+      - name: Test that timeout reports an error
+        continue-on-error: true
+        uses: ./
+        with:
+          files: 'test/timeout_test/matching_loop.gobra'
+          packageTimeout: 10s
       - name: Upload statistics report
         uses: actions/upload-artifact@v2
         with:

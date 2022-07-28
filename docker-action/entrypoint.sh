@@ -116,7 +116,10 @@ CMD="java $JAVA_ARGS $GOBRA_ARGS"
 
 echo $CMD
 
-if timeout $INPUT_GLOBALTIMEOUT $CMD; then
+timeout $INPUT_GLOBALTIMEOUT $CMD
+EXIT_CODE=$?
+
+if [ $EXIT_CODE -eq 0 ]; then
     echo -e "${GREEN}Verification completed successfully${RESET}"
     # if verification succeeded and the user expects a stats file, then
     # put it in the expected place
@@ -124,7 +127,6 @@ if timeout $INPUT_GLOBALTIMEOUT $CMD; then
         mv /tmp/stats.json $STATS_TARGET
     fi
 else
-    EXIT_CODE=$?
     if [ $EXIT_CODE -eq 124 ]; then
 	echo -e "${RED}Verification timed out globally${RESET}"
     else
