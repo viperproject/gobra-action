@@ -1,4 +1,4 @@
-package test
+package timeout_test
 
 ghost
 pure func magic(i int) int
