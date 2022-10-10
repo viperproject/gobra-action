@@ -39,13 +39,10 @@ inputs:
     description: 'Maximum size of the heap.'
     required: true
     default: '4g'
-  globalTimeout:
-    description: 'Time-out for the entire Gobra Action. Note that a GitHub workflow step times-out automatically after 6 hours.'
-    required: true
-    default: '6h'
-  packageTimeout:
-    description: 'Time-out for the verification of a single package.'
+  timeout:
+    description: 'Time-out for the verification job. Note that a GitHub workflow step times-out automatically after 6 hours.'
     required: false
+    default: '6h'
   imageName:
     description: 'Base image of Gobra to be used.'
     required: true

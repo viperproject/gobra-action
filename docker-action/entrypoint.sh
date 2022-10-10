@@ -3,9 +3,9 @@
 DEBUG_MODE=0
 
 if [[ $DEBUG_MODE -eq 1 ]]; then
-    DEBUG_OUT="/dev/stdout"
+	DEBUG_OUT="/dev/stdout"
 else
-    DEBUG_OUT="/dev/nil"
+	DEBUG_OUT="/dev/nil"
 fi
 
 RED='\033[0;31m'
@@ -20,12 +20,12 @@ REPOSITORY_NAME=$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/
 # to the base path (${@:2}). Also works if one of the argument paths is an
 # absolute path. Note: does not handle paths that contain a space.
 getFileListInDir () (
-    local LOCATION=$1
-    cd -- "$LOCATION"
-    # the tail of the list of arguments (i.e., the args without
-    # the function name and the first argument (LOCATION) are
-    # the list of paths to be processed.
-    echo "$(echo "${@:2}" | xargs realpath | tr '\n' ' ')"
+	local LOCATION=$1
+	cd -- "$LOCATION"
+	# the tail of the list of arguments (i.e., the args without
+	# the function name and the first argument (LOCATION) are
+	# the list of paths to be processed.
+	echo "$(echo "${@:2}" | xargs realpath | tr '\n' ' ')"
 )
 
 GOBRA_JAR="/gobra/gobra.jar"
@@ -33,80 +33,82 @@ JAVA_ARGS="-Xss$INPUT_JAVAXSS -Xmx$INPUT_JAVAXMX -jar $GOBRA_JAR"
 GOBRA_ARGS="--backend $INPUT_VIPERBACKEND --chop $INPUT_CHOP"
 
 if [[ $INPUT_PROJECTLOCATION ]]; then
-    PROJECT_LOCATION="$GITHUB_WORKSPACE/$INPUT_PROJECTLOCATION"
+	PROJECT_LOCATION="$GITHUB_WORKSPACE/$INPUT_PROJECTLOCATION"
 else
-    PROJECT_LOCATION="$GITHUB_WORKSPACE/$REPOSITORY_NAME"
+	PROJECT_LOCATION="$GITHUB_WORKSPACE/$REPOSITORY_NAME"
 fi
 
 if [[ $INPUT_RECURSIVE -eq 1 ]]; then
-    GOBRA_ARGS="--recursive --projectRoot $PROJECT_LOCATION $GOBRA_ARGS"
+	GOBRA_ARGS="--recursive --projectRoot $PROJECT_LOCATION $GOBRA_ARGS"
 fi
 
 if [[ $INPUT_FILES ]]; then
-    RESOLVED_PATHS="$(getFileListInDir $PROJECT_LOCATION $INPUT_FILES)"
-    echo "[DEBUG] Project Location: $PROJECT_LOCATION" > $DEBUG_OUT
-    echo "[DEBUG] Input Files: $INPUT_FILES" > $DEBUG_OUT
-    echo "[DEBUG] Resolved Paths: $RESOLVED_PATHS" > $DEBUG_OUT
-    GOBRA_ARGS="-i $RESOLVED_PATHS $GOBRA_ARGS"
+	RESOLVED_PATHS="$(getFileListInDir $PROJECT_LOCATION $INPUT_FILES)"
+	echo "[DEBUG] Project Location: $PROJECT_LOCATION" > $DEBUG_OUT
+	echo "[DEBUG] Input Files: $INPUT_FILES" > $DEBUG_OUT
+	echo "[DEBUG] Resolved Paths: $RESOLVED_PATHS" > $DEBUG_OUT
+	GOBRA_ARGS="-i $RESOLVED_PATHS $GOBRA_ARGS"
 fi
 
 if [[ $INPUT_PACKAGES ]]; then
-    # INPUT_PACKAGES are paths to packages
-    RESOLVED_PATHS="$(getFileListInDir $PROJECT_LOCATION $INPUT_PACKAGES)"
-    GOBRA_ARGS="-p $RESOLVED_PATHS $GOBRA_ARGS"
+	# INPUT_PACKAGES are paths to packages
+	RESOLVED_PATHS="$(getFileListInDir $PROJECT_LOCATION $INPUT_PACKAGES)"
+	GOBRA_ARGS="-p $RESOLVED_PATHS $GOBRA_ARGS"
 fi
 
 if [[ $INPUT_INCLUDEPATHS ]]; then
-    RESOLVED_PATHS=$(getFileListInDir $PROJECT_LOCATION $INPUT_INCLUDEPATHS)
-    echo "[DEBUG] Project Location: $PROJECT_LOCATION" > $DEBUG_OUT
-    echo "[DEBUG] Include Paths: $INPUT_INCLUDEPATHS" > $DEBUG_OUT
-    echo "[DEBUG] Resolved Paths: $RESOLVED_PATHS" > $DEBUG_OUT
-    GOBRA_ARGS="$GOBRA_ARGS -I $RESOLVED_PATHS"
+	RESOLVED_PATHS=$(getFileListInDir $PROJECT_LOCATION $INPUT_INCLUDEPATHS)
+	echo "[DEBUG] Project Location: $PROJECT_LOCATION" > $DEBUG_OUT
+	echo "[DEBUG] Include Paths: $INPUT_INCLUDEPATHS" > $DEBUG_OUT
+	echo "[DEBUG] Resolved Paths: $RESOLVED_PATHS" > $DEBUG_OUT
+	GOBRA_ARGS="$GOBRA_ARGS -I $RESOLVED_PATHS"
 else
-    GOBRA_ARGS="$GOBRA_ARGS -I $PROJECT_LOCATION" 
+	GOBRA_ARGS="$GOBRA_ARGS -I $PROJECT_LOCATION" 
 fi
 
 if [[ $INPUT_CACHING -eq 1 ]]; then
-    GOBRA_ARGS="$GOBRA_ARGS --cacheFile .gobra/cache.json"
+	GOBRA_ARGS="$GOBRA_ARGS --cacheFile .gobra/cache.json"
 fi
 
 if [[ $INPUT_HEADERONLY -eq 1 ]]; then
-    GOBRA_ARGS="$GOBRA_ARGS --onlyFilesWithHeader"
+	GOBRA_ARGS="$GOBRA_ARGS --onlyFilesWithHeader"
 fi
 
 if [[ $INPUT_MODULE ]]; then
-    GOBRA_ARGS="$GOBRA_ARGS -m $INPUT_MODULE"
+	GOBRA_ARGS="$GOBRA_ARGS -m $INPUT_MODULE"
 fi
 
 if [[ $INPUT_EXCLUDEPACKAGES ]]; then
-    GOBRA_ARGS="$GOBRA_ARGS --excludePackages $INPUT_EXCLUDEPACKAGES"
+	GOBRA_ARGS="$GOBRA_ARGS --excludePackages $INPUT_EXCLUDEPACKAGES"
 fi
 
-if [[ $INPUT_PACKAGETIMEOUT ]]; then
-    GOBRA_ARGS="$GOBRA_ARGS --packageTimeout $INPUT_PACKAGETIMEOUT"
-fi
+# We are explicitely skipping the usage of Gobra's package timeout, given that it
+# is currently very unreliable
+# if [[ $INPUT_PACKAGETIMEOUT ]]; then
+#    GOBRA_ARGS="$GOBRA_ARGS --packageTimeout $INPUT_PACKAGETIMEOUT"
+# fi
 
 # The default mode in Gobra might change in the future.
 # Having both options explicitly avoids subtle changes of
 # behaviour if that happens.
 if [[ $INPUT_ASSUMEINJECTIVITYONINHALE -eq 1 ]]; then
-    GOBRA_ARGS="$GOBRA_ARGS --assumeInjectivityOnInhale"
+	GOBRA_ARGS="$GOBRA_ARGS --assumeInjectivityOnInhale"
 else
-    GOBRA_ARGS="$GOBRA_ARGS --noassumeInjectivityOnInhale"
+	GOBRA_ARGS="$GOBRA_ARGS --noassumeInjectivityOnInhale"
 fi
 
 if [[ $INPUT_CHECKCONSISTENCY -eq 1 ]]; then
-    GOBRA_ARGS="$GOBRA_ARGS --checkConsistency"
+	GOBRA_ARGS="$GOBRA_ARGS --checkConsistency"
 fi
 
 if [[ $INPUT_STATSFILE ]]; then
-    # We write the file to /tmp/ (which is easier then making gobra write directly
-    # to the STATS_TARGET, as doing so often causes Gobra to not generate a file) due
-    # to the lack of permissions. We later move this file to correct destination.
-    echo "[DEBUG] path to stats file was passed" > $DEBUG_OUT
-    GOBRA_ARGS="$GOBRA_ARGS -g /tmp/"
+	# We write the file to /tmp/ (which is easier then making gobra write directly
+	# to the STATS_TARGET, as doing so often causes Gobra to not generate a file) due
+	# to the lack of permissions. We later move this file to correct destination.
+	echo "[DEBUG] path to stats file was passed" > $DEBUG_OUT
+	GOBRA_ARGS="$GOBRA_ARGS -g /tmp/"
 else
-    echo "[DEBUG] path to stats file was NOT passed" > $DEBUG_OUT
+	echo "[DEBUG] path to stats file was NOT passed" > $DEBUG_OUT
 fi
 
 START_TIME=$SECONDS
@@ -116,20 +118,23 @@ CMD="java $JAVA_ARGS $GOBRA_ARGS"
 
 echo $CMD
 
-if timeout $INPUT_GLOBALTIMEOUT $CMD; then
-    echo -e "${GREEN}Verification completed successfully${RESET}"
-    # if verification succeeded and the user expects a stats file, then
-    # put it in the expected place
-    if [[ $INPUT_STATSFILE ]]; then
-        mv /tmp/stats.json $STATS_TARGET
-    fi
+timeout $INPUT_TIMEOUT $CMD
+EXIT_CODE=$?
+
+if [ $EXIT_CODE -eq 0 ]; then
+	echo -e "${GREEN}Verification completed successfully${RESET}"
+	# if verification succeeded and the user expects a stats file, then
+	# put it in the expected place
+	if [[ $INPUT_STATSFILE ]]; then
+		mv /tmp/stats.json $STATS_TARGET
+	fi
 else
-    EXIT_CODE=$?
-    if [ $EXIT_CODE -eq 124 ]; then
-	echo -e "${RED}Verification timed out globally${RESET}"
-    else
-	echo -e "${RED}There are verification errors${RESET}"
-    fi
+	if [ $EXIT_CODE -eq 124 ]; then
+		echo ""
+		echo -e "${RED}Verification job timed out${RESET}"
+	else
+		echo -e "${RED}There are verification errors${RESET}"
+	fi
 fi
 
 TIME_PASSED=$[ $SECONDS-$START_TIME ]
