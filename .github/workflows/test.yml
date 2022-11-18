@@ -22,6 +22,12 @@ jobs:
           files: 'test/files_test/file1.go test/files_test/file2.gobra'
           includePaths: 'test/include_path'
           timeout: 2m
+      - name: Verify Gobra files (files with @)
+        uses: ./
+        with:
+          files: 'test/files_test/file1.go@11 test/files_test/file2.gobra'
+          includePaths: 'test/include_path'
+          timeout: 2m
       - name: Verify Gobra files (package mode)
         uses: ./
         with:
