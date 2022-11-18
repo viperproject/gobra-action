@@ -101,6 +101,14 @@ if [[ $INPUT_CHECKCONSISTENCY -eq 1 ]]; then
 	GOBRA_ARGS="$GOBRA_ARGS --checkConsistency"
 fi
 
+if [[ $INPUT_DISABLEMORECOMPLETEEXHALE -eq 1 ]]; then
+	GOBRA_ARGS="$GOBRA_ARGS --disableMoreCompleteExhale"
+fi
+
+if [[ $INPUT_PARALLELIZEBRANCHES -eq 1 ]]; then
+	GOBRA_ARGS="$GOBRA_ARGS --parallelizeBranches"
+fi
+
 if [[ $INPUT_STATSFILE ]]; then
 	# We write the file to /tmp/ (which is easier then making gobra write directly
 	# to the STATS_TARGET, as doing so often causes Gobra to not generate a file) due
