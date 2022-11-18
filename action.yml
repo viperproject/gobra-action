@@ -66,6 +66,14 @@ inputs:
     decription: 'Enforces additional consistency checks in the generated Viper code. Helpful to debug problems with the encoding of Gobra.'
     required: false
     default: '0'
+  disableMoreCompleteExhale:
+    description: 'Disables more complete exhale.'
+    required: false
+    default: '0'
+  parallelizeBranches:
+    description: 'Parallelize branches in the silicon backend.'
+    required: false
+    default: '0'
   statsFile:
     description: 'Path where the generated stats.json file will be stored'
     required: false
