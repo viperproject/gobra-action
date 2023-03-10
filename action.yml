@@ -66,10 +66,10 @@ inputs:
     decription: 'Enforces additional consistency checks in the generated Viper code. Helpful to debug problems with the encoding of Gobra.'
     required: false
     default: '0'
-  disableMoreCompleteExhale:
-    description: 'Disables more complete exhale.'
+  mceMode:
+    description: 'Exhale Mode used together with a silicon-based backend. It can be enabled ("on"), disabled("off"), or enabled on demand ("od").'
     required: false
-    default: '0'
+    default: 'on'
   parallelizeBranches:
     description: 'Parallelize branches in the silicon backend.'
     required: false

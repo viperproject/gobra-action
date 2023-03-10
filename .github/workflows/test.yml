@@ -57,12 +57,12 @@ jobs:
           headerOnly: '1'
           timeout: 2m
           statsFile: '/stats/'
-      - name: Verify Gobra files (disableMoreCompleteExhale and parallelizeBranches)
+      - name: Verify Gobra files without moreCompleteExhale and with parallelizeBranches
         uses: ./
         with:
           packages: 'test/packages_test/test1/'
           timeout: 2m
-          disableMoreCompleteExhale: 1
+          mceMde: 'off'
           parallelizeBranches: 1
       - name: Test that timeout reports an error
         continue-on-error: true
