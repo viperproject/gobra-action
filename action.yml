@@ -74,6 +74,10 @@ inputs:
     description: 'Parallelize branches in the silicon backend.'
     required: false
     default: '0'
+  requireTriggers:
+    description: 'Require that all quantifiers have user-provided triggers.'
+    required: false
+    default: '0'
   conditionalizePermissions:
     description: 'Tries to reduce the number of branches that Gobra has to deal with the option --conditionalizePermissions'
     required: false
