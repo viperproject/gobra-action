@@ -101,6 +101,10 @@ if [[ $INPUT_CHECKCONSISTENCY -eq 1 ]]; then
 	GOBRA_ARGS="$GOBRA_ARGS --checkConsistency"
 fi
 
+if [[ $INPUT_OVERFLOW -eq 1]]; then
+	GOBRA_ARGS="$GOBRA_ARGS --overflow"
+fi
+
 if [[ $INPUT_MCEMODE ]]; then
 	GOBRA_ARGS="$GOBRA_ARGS --mceMode=$INPUT_MCEMODE"
 fi
@@ -115,10 +119,6 @@ fi
 
 if [[ $INPUT_CONDITIONALIZEPERMISSIONS -eq 1 ]]; then
 	GOBRA_ARGS="$GOBRA_ARGS --conditionalizePermissions"
-fi
-
-if [[ $INPUT_OVERFLOW -eq 1 ]]; then
-	GOBRA_ARGS="$GOBRA_ARGS --overflow"
 fi
 
 if [[ $INPUT_STATSFILE ]]; then
