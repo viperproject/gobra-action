@@ -17,6 +17,7 @@ func sum(n int) (sum int) {
 }
 
 ensures res == (n % 2 == 0)
+decreases
 pure func isEven(n int) (res bool) {
 	return n % 2 == 0
 }
