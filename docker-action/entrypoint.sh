@@ -117,6 +117,10 @@ if [[ $INPUT_CONDITIONALIZEPERMISSIONS  -eq 1 ]]; then
 	GOBRA_ARGS="$GOBRA_ARGS --conditionalizePermissions"
 fi
 
+if [[ $INPUT_OVERFLOW -eq 1 ]]; then
+	GOBRA_ARGS="$GOBRA_ARGS --overflow"
+fi
+
 if [[ $INPUT_STATSFILE ]]; then
 	# We write the file to /tmp/ (which is easier then making gobra write directly
 	# to the STATS_TARGET, as doing so often causes Gobra to not generate a file) due
