@@ -70,6 +70,10 @@ if [[ $INPUT_CACHING -eq 1 ]]; then
 	GOBRA_ARGS="$GOBRA_ARGS --cacheFile .gobra/cache.json"
 fi
 
+if [[ $INPUT_USEZ3API -eq 1 ]]; then
+	GOBRA_ARGS="$GOBRA_ARGS --z3APIMode"
+fi
+
 if [[ $INPUT_HEADERONLY -eq 1 ]]; then
 	GOBRA_ARGS="$GOBRA_ARGS --onlyFilesWithHeader"
 fi

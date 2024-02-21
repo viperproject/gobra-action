@@ -86,6 +86,10 @@ inputs:
     description: 'Tries to reduce the number of branches that Gobra has to deal with the option --conditionalizePermissions'
     required: false
     default: '0'
+  useZ3API:
+    description: 'Use the Z3 API in silicon.'
+    required: false
+    default: '0'
   statsFile:
     description: 'Path where the generated stats.json file will be stored'
     required: false

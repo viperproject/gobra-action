@@ -36,6 +36,13 @@ jobs:
           includePaths: 'test/include_path'
           timeout: 2m
           overflow: 1
+      - name: Verify Gobra files with the Z3 API
+        uses: ./
+        with:
+          files: 'test/files_test/file1.go test/files_test/file2.gobra'
+          includePaths: 'test/include_path'
+          timeout: 2m
+          useZ3API: '1'
       - name: Verify Gobra files (package mode)
         uses: ./
         with:
