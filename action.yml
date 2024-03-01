@@ -86,6 +86,10 @@ inputs:
     description: 'Tries to reduce the number of branches that Gobra has to deal with the option --conditionalizePermissions'
     required: false
     default: '0'
+  disableNL:
+    description: 'Disable non-linear integer arithmetic. Non compatible yet with Carbon'
+    required: false
+    default: '0'
   useZ3API:
     description: 'Use the Z3 API in silicon.'
     required: false

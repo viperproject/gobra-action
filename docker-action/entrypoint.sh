@@ -117,6 +117,11 @@ if [[ $INPUT_REQUIRETRIGGERS -eq 1 ]]; then
 	GOBRA_ARGS="$GOBRA_ARGS --requireTriggers"
 fi
 
+if [[ $INPUT_DISABLENL -eq 1 ]]; then
+	GOBRA_ARGS="$GOBRA_ARGS --disableNL"
+fi
+
+
 if [[ $INPUT_CONDITIONALIZEPERMISSIONS -eq 1 ]]; then
 	GOBRA_ARGS="$GOBRA_ARGS --conditionalizePermissions"
 fi
