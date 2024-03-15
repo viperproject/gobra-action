@@ -22,7 +22,6 @@ jobs:
           files: 'test/files_test/file1.go test/files_test/file2.gobra'
           includePaths: 'test/include_path'
           timeout: 2m
-          unsafeWildcardOptimization: '1'
       - name: Verify Gobra files with conditionalizePermissions (files mode)
         uses: ./
         with:
