@@ -90,6 +90,14 @@ inputs:
     description: 'Disable non-linear integer arithmetic. Non compatible yet with Carbon'
     required: false
     default: '0'
+  moreJoins:
+    description: 'Use a more complete state merging algorithm.'
+    required: false
+    default: '0'
+  unsafeWildcardOptimization:
+    description: "Perform the optimization described in silicon's PR #756. You must ensure that the necessary conditions for the optimization are met."
+    required: false
+    default: '0'
   useZ3API:
     description: 'Use the Z3 API in silicon.'
     required: false
