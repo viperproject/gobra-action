@@ -29,7 +29,7 @@ jobs:
           includePaths: 'test/include_path'
           timeout: 2m
           conditionalizePermissions: '1'
-          disableNL: '1'
+            # disableNL: '1'
       - name: Verify chopped Gobra files
         uses: ./
         with:
