@@ -121,9 +121,16 @@ if [[ $INPUT_DISABLENL -eq 1 ]]; then
 	GOBRA_ARGS="$GOBRA_ARGS --disableNL"
 fi
 
+if [[ $INPUT_UNSAFEWILDCARDOPTIMIZATION -eq 1 ]]; then
+	GOBRA_ARGS="$GOBRA_ARGS --unsafeWildcardOptimization"
+fi
 
 if [[ $INPUT_CONDITIONALIZEPERMISSIONS -eq 1 ]]; then
 	GOBRA_ARGS="$GOBRA_ARGS --conditionalizePermissions"
+fi
+
+if [[ $INPUT_MOREJOINS -eq 1 ]]; then
+	GOBRA_ARGS="$GOBRA_ARGS --moreJoins"
 fi
 
 if [[ $INPUT_OVERFLOW -eq 1 ]]; then
