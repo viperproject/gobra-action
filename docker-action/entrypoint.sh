@@ -129,9 +129,7 @@ if [[ $INPUT_CONDITIONALIZEPERMISSIONS -eq 1 ]]; then
 	GOBRA_ARGS="$GOBRA_ARGS --conditionalizePermissions"
 fi
 
-if [[ $INPUT_MOREJOINS -eq 1 ]]; then
-	GOBRA_ARGS="$GOBRA_ARGS --moreJoins"
-fi
+GOBRA_ARGS="$GOBRA_ARGS --moreJoins $INPUT_MOREJOINS"
 
 if [[ $INPUT_OVERFLOW -eq 1 ]]; then
 	GOBRA_ARGS="$GOBRA_ARGS --overflow"

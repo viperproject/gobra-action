@@ -91,9 +91,9 @@ inputs:
     required: false
     default: '0'
   moreJoins:
-    description: 'Use a more complete state merging algorithm.'
+    description: 'Specifies if silicon should be run with more joins completely enabled ("all"), disabled ("off"), or only for impure conditionals ("impure").'
     required: false
-    default: '0'
+    default: 'off'
   unsafeWildcardOptimization:
     description: "Perform the optimization described in silicon's PR #756. You must ensure that the necessary conditions for the optimization are met."
     required: false
