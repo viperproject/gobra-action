@@ -38,7 +38,7 @@ inputs:
   javaXss:
     description: 'Java stack size. Should be increased in case of frequent stack overflows.'
     required: true
-    default: '128m'
+    default: '1g'
   javaXmx:
     description: 'Maximum size of the heap.'
     required: true
