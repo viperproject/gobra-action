@@ -4,7 +4,7 @@ inputs:
   caching:
     description: 'Enable caching of verification results. The possible values are 0 (disabled) and 1 (enabled).'
     required: true
-    default: '1' # cache enabled by default
+    default: '0' # cache enabled by default
   projectLocation:
     description: 'Location in which the project is located in the workflow context. By default, it looks in a folder with the same name as the repository.'
     required: false
@@ -24,6 +24,10 @@ inputs:
     description: 'Verify nested packages recursively'
     required: false
     default:  '0'
+  respectFunctionPrePermAmounts:
+    description: 'Respects precise permission amounts in pure function preconditions instead of only checking read access, as done in older versions of Gobra. This option should be used for verifying legacy projects written with the old interpretation of fractional permissions. New projects are encouraged to set this flag to false.'
+    required: false
+    default: '1'
   overflow:
     description: 'Check for arithmetic overflows in integer expressions.'
     required: false
@@ -34,7 +38,7 @@ inputs:
   viperBackend:
     description: 'Which Viper backend to use. Can be one of "SILICON", "VSWITHSILICON", "CARBON", and "VSWITHCARBON".'
     required: true
-    default: "VSWITHSILICON" # to allow caching by default
+    default: "SILICON" # to allow caching by default
   javaXss:
     description: 'Java stack size. Should be increased in case of frequent stack overflows.'
     required: true
