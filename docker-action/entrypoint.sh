@@ -43,9 +43,9 @@ if [[ $INPUT_RECURSIVE -eq 1 ]]; then
 fi
 
 if [[ $INPUT_RESPECTFUNCTIONPREPERMAMOUNTS -eq 1 ]]; then
-	GOBRA_ARGS="--respectFunctionPrePermAmounts"
+	GOBRA_ARGS="--respectFunctionPrePermAmounts $GOBRA_ARGS"
 else
-	GOBRA_ARGS="--norespectFunctionPrePermAmounts"
+	GOBRA_ARGS="--norespectFunctionPrePermAmounts $GOBRA_ARGS"
 fi
 
 if [[ $INPUT_FILES ]]; then
