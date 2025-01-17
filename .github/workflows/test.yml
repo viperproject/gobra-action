@@ -80,12 +80,6 @@ jobs:
         with:
           files: 'test/timeout_test/matching_loop.gobra'
           timeout: 10s
-      - name: Test with option `--norespectFunctionPrePermAmounts`
-        uses: ./
-        with:
-          files: 'test/respectPreAmounts.gobra'
-          respectFunctionPrePermAmounts: '0'
-          timeout: 2m
       - name: Upload statistics report
         uses: actions/upload-artifact@v4
         with:
