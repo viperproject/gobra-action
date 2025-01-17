@@ -24,6 +24,10 @@ inputs:
     description: 'Verify nested packages recursively'
     required: false
     default:  '0'
+  respectFunctionPrePermAmounts:
+    description: 'Respects precise permission amounts in pure function preconditions instead of only checking read access, as done in older versions of Gobra. This option should be used for verifying legacy projects written with the old interpretation of fractional permissions. New projects are encouraged to set this flag to false.'
+    required: false
+    default: '1'
   overflow:
     description: 'Check for arithmetic overflows in integer expressions.'
     required: false

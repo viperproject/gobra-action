@@ -42,6 +42,12 @@ if [[ $INPUT_RECURSIVE -eq 1 ]]; then
 	GOBRA_ARGS="--recursive --projectRoot $PROJECT_LOCATION $GOBRA_ARGS"
 fi
 
+if [[ $INPUT_RESPECTFUNCTIONPREPERMAMOUNTS -eq 1 ]]; then
+	GOBRA_ARGS="--respectFunctionPrePermAmounts"
+else
+	GOBRA_ARGS="--norespectFunctionPrePermAmounts"
+fi
+
 if [[ $INPUT_FILES ]]; then
 	RESOLVED_PATHS="$(getFileListInDir $PROJECT_LOCATION $INPUT_FILES)"
 	echo "[DEBUG] Project Location: $PROJECT_LOCATION" > $DEBUG_OUT
