@@ -11,6 +11,10 @@ inputs:
   includePaths:
     description: 'Directories used for package lookup. Their paths are relative to the project location.'
     required: false
+  enableFriendClauses:
+    description: 'Enable friend package invariants (experimental).'
+    required: false
+    default:  '0'
   files:
     description: 'List of Go and Gobra files to verify.'
     required: false
