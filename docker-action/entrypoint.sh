@@ -124,7 +124,7 @@ if [[ $INPUT_REQUIRETRIGGERS -eq 1 ]]; then
 fi
 
 if [[ $INPUT_ENABLEFRIENDCLAUSES -eq 1 ]]; then
-	GOBRA_ARGS="$GOBRA_ARGS --enableFriendClauses"
+	GOBRA_ARGS="$GOBRA_ARGS --experimentalFriendClauses"
 fi
 
 if [[ $INPUT_DISABLENL -eq 1 ]]; then
