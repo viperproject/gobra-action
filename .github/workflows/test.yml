@@ -49,6 +49,7 @@ jobs:
         with:
           packages: 'test/packages_test/test1/'
           moreJoins: 'impure'
+          enableFriendClauses: '1'
           timeout: 2m
       - name: Verify Gobra files (recursive mode)
         uses: ./

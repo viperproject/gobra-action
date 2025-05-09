@@ -123,6 +123,10 @@ if [[ $INPUT_REQUIRETRIGGERS -eq 1 ]]; then
 	GOBRA_ARGS="$GOBRA_ARGS --requireTriggers"
 fi
 
+if [[ $INPUT_ENABLEFRIENDCLAUSES -eq 1 ]]; then
+	GOBRA_ARGS="$GOBRA_ARGS --enableFriendClauses"
+fi
+
 if [[ $INPUT_DISABLENL -eq 1 ]]; then
 	GOBRA_ARGS="$GOBRA_ARGS --disableNL"
 fi
