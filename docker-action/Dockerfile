@@ -7,11 +7,14 @@ FROM ${image_name}:${image_version}
 COPY entrypoint.sh /gobra/entrypoint.sh
 
 RUN chmod +x /gobra/entrypoint.sh
+
+RUN add-apt-repository ppa:longsleep/golang-backports
 RUN apt-get update && \
 	apt-get install -y \
 	libz3-java \
 	golang-go \
 	git
+
 
 WORKDIR /gobra
 
