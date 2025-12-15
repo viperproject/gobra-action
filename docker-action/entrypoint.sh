@@ -2,6 +2,8 @@
 
 DEBUG_MODE=0
 
+echo "gobrago found in $(which gobrago)"
+
 if [[ $DEBUG_MODE -eq 1 ]]; then
 	DEBUG_OUT="/dev/stdout"
 else
