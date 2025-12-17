@@ -29,8 +29,7 @@ WORKDIR /gobra
 RUN git clone https://github.com/jcp19/gobrago.git
 RUN cd gobrago && \
 	go build . && \
-	mv gobrago ~/.local/bin
-
+	mv gobrago /usr/local/bin
 
 ENTRYPOINT ["/gobra/entrypoint.sh"]
 
