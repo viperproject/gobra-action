@@ -8,13 +8,19 @@ COPY entrypoint.sh /gobra/entrypoint.sh
 
 RUN chmod +x /gobra/entrypoint.sh
 
-#RUN add-apt-repository ppa:longsleep/golang-backports
 RUN apt-get update && \
 	apt-get install -y \
 	libz3-java \
-	golang-go \
 	git
 
+# Install Go
+
+RUN export GO_VERSION=1.22.6 && \
+	wget https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz && \
+	sudo tar -C /usr/local -xzf go${GO_VERSION}.linux-amd64.tar.gz && \
+	echo 'export PATH=/usr/local/go/bin:$PATH' | sudo tee /etc/profile.d/go.sh
+
+RUN go version
 
 WORKDIR /gobra
 
