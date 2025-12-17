@@ -18,8 +18,9 @@ RUN apt-get update && \
 
 RUN export GO_VERSION=1.22.6 && \
 	wget https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz && \
-	tar -C /usr/local -xzf go${GO_VERSION}.linux-amd64.tar.gz && \
-	echo 'export PATH=/usr/local/go/bin:$PATH' | tee /etc/profile.d/go.sh
+	tar -C /usr/local -xzf go${GO_VERSION}.linux-amd64.tar.gz
+
+ENV PATH=/usr/local/go/bin:$PATH
 
 RUN go version
 
