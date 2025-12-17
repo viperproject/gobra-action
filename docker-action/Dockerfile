@@ -11,7 +11,8 @@ RUN chmod +x /gobra/entrypoint.sh
 RUN apt-get update && \
 	apt-get install -y \
 	libz3-java \
-	git
+	git \
+	wget
 
 # Install Go
 
