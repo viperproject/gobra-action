@@ -1,6 +1,12 @@
 name: 'Gobra'
 description: 'Verify your Go project with Gobra'
 inputs:
+  jsonConfig:
+    description: 'JSON config for the verification job, as expected by gobrago (https://github.com/jcp19/gobrago).'
+    required: false
+  baseJsonConfig:
+    description: 'Base JSON config for the verification job, as expected by gobrago (https://github.com/jcp19/gobrago).'
+    required: false
   caching:
     description: 'Enable caching of verification results. The possible values are 0 (disabled) and 1 (enabled).'
     required: true
