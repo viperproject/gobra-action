@@ -29,7 +29,7 @@ getFileListInDir () (
 )
 
 GOBRA_JAR="/gobra/gobra.jar"
-JAVA_ARGS="-Xss$INPUT_JAVAXSS -Xmx$INPUT_JAVAXMX -jar $GOBRA_JAR"
+JAVA_ARGS="-Xss$INPUT_JAVAXSS -Xmx$INPUT_JAVAXMX -XX:-UseContainerSupport -Dcom.sun.management.jmxremote=false -jar $GOBRA_JAR"
 GOBRA_ARGS="--backend $INPUT_VIPERBACKEND --chop $INPUT_CHOP"
 
 if [[ $INPUT_PROJECTLOCATION ]]; then
