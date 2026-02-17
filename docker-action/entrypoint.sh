@@ -183,7 +183,7 @@ fi
 
 TIME_PASSED=$[ $SECONDS-$START_TIME ]
 
-echo "::set-output name=time::$TIME_PASSED"
+echo "time=$TIME_PASSED" >> $GITHUB_OUTPUT
 
 echo "[DEBUG] Contents of /tmp/:" > $DEBUG_OUT
 ls -la /tmp/ > $DEBUG_OUT
