@@ -62,6 +62,16 @@ if [[ $INPUT_PACKAGES ]]; then
 	GOBRA_ARGS="-p $RESOLVED_PATHS $GOBRA_ARGS"
 fi
 
+if [[ $INPUT_CONFIG ]]; then
+	# INPUT_CONFIG is the path to a Gobra JSON config file (or a directory
+	# containing one), relative to the project location.
+	RESOLVED_PATHS="$(getFileListInDir $PROJECT_LOCATION $INPUT_CONFIG)"
+	echo "[DEBUG] Project Location: $PROJECT_LOCATION" > $DEBUG_OUT
+	echo "[DEBUG] Config: $INPUT_CONFIG" > $DEBUG_OUT
+	echo "[DEBUG] Resolved Config Path: $RESOLVED_PATHS" > $DEBUG_OUT
+	GOBRA_ARGS="--config $RESOLVED_PATHS $GOBRA_ARGS"
+fi
+
 if [[ $INPUT_INCLUDEPATHS ]]; then
 	RESOLVED_PATHS=$(getFileListInDir $PROJECT_LOCATION $INPUT_INCLUDEPATHS)
 	echo "[DEBUG] Project Location: $PROJECT_LOCATION" > $DEBUG_OUT

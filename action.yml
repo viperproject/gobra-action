@@ -114,6 +114,9 @@ inputs:
     description: 'Path where the generated stats.json file will be stored'
     required: false
     default: '/stats/'
+  config:
+    description: 'Path to a Gobra JSON configuration file (e.g. a package-level `gobra.json`) or to a directory containing one. The path is relative to the project location. When set, Gobra treats the folder containing the JSON file as a package to verify; in that case the `files`, `packages`, and `recursive` inputs should typically not be used.'
+    required: false
 outputs:
   time:
     description: 'Total verification time in seconds'

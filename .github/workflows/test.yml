@@ -75,6 +75,11 @@ jobs:
           timeout: 2m
           mceMde: 'off'
           parallelizeBranches: 1
+      - name: Verify Gobra files (JSON config mode)
+        uses: ./
+        with:
+          config: 'test/config_test'
+          timeout: 2m
       - name: Test that timeout reports an error
         continue-on-error: true
         uses: ./
