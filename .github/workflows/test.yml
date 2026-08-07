@@ -55,7 +55,8 @@ jobs:
         uses: ./
         with:
           projectLocation: 'gobra-action/test/'
-          excludePackages: 'main timeout_test'
+          # the packages below `test/config_test` are verified via their JSON configs
+          excludePackages: 'main timeout_test config_lib config_pkg1 config_pkg2'
           recursive: '1'
           timeout: 2m
           checkConsistency: '1'
@@ -75,6 +76,47 @@ jobs:
           timeout: 2m
           mceMde: 'off'
           parallelizeBranches: 1
+      - name: Verify Gobra files (config file mode, directory containing a gobra.json)
+        uses: ./
+        with:
+          configFile: 'gobra-action/test/config_test/config_pkg1'
+          timeout: 2m
+      - name: Verify Gobra files (config file mode, path to a gobra.json)
+        uses: ./
+        with:
+          configFile: 'gobra-action/test/config_test/config_pkg1/gobra.json'
+          timeout: 2m
+      - name: Print the configuration resolved from the JSON config files
+        uses: ./
+        with:
+          configFile: 'gobra-action/test/config_test/config_pkg1'
+          printConfig: '1'
+          timeout: 2m
+      - name: Test that the options of the JSON config are applied
+        id: config-overflow
+        continue-on-error: true
+        uses: ./
+        with:
+          configFile: 'gobra-action/test/config_test/config_pkg2'
+          timeout: 2m
+      - name: Test that the options of the JSON config are applied (assertion)
+        if: steps.config-overflow.outcome == 'success'
+        run: |
+          echo "Expected the verification of config_pkg2 to fail, since its gobra.json enables overflow checking"
+          exit 1
+      - name: Test that configFile reports an error when combined with another input mode
+        id: config-conflict
+        continue-on-error: true
+        uses: ./
+        with:
+          configFile: 'gobra-action/test/config_test/config_pkg1'
+          files: 'test/files_test/file1.go'
+          timeout: 2m
+      - name: Test that configFile reports an error when combined with another input mode (assertion)
+        if: steps.config-conflict.outcome == 'success'
+        run: |
+          echo "Expected the Action to reject 'configFile' in combination with 'files'"
+          exit 1
       - name: Test that timeout reports an error
         continue-on-error: true
         uses: ./

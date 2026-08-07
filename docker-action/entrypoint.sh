@@ -30,13 +30,94 @@ getFileListInDir () (
 
 GOBRA_JAR="/gobra/gobra.jar"
 JAVA_ARGS="-Xss$INPUT_JAVAXSS -Xmx$INPUT_JAVAXMX -XX:-UseContainerSupport -Dcom.sun.management.jmxremote=false -jar $GOBRA_JAR"
-GOBRA_ARGS="--backend $INPUT_VIPERBACKEND --chop $INPUT_CHOP"
 
 if [[ $INPUT_PROJECTLOCATION ]]; then
 	PROJECT_LOCATION="$GITHUB_WORKSPACE/$INPUT_PROJECTLOCATION"
 else
 	PROJECT_LOCATION="$GITHUB_WORKSPACE/$REPOSITORY_NAME"
 fi
+
+# collects the names of the inputs that are ignored in config file mode
+IGNORED_INPUTS=""
+
+# records the input named $1 as ignored if its value ($2) differs from its default ($3)
+recordIgnoredInput () {
+	if [[ "$2" != "$3" ]]; then
+		IGNORED_INPUTS="$IGNORED_INPUTS $1"
+	fi
+}
+
+if [[ $INPUT_CONFIGFILE ]]; then
+
+# Config file mode. Gobra reads all of its options from `gobra.json` and `gobra-mod.json`.
+# `--config` must not be combined with any other option of Gobra (except for `--printConfig`),
+# thus, none of the options derived from the remaining inputs are passed on.
+
+# `configFile` is relative to the workflow context, just like `projectLocation`.
+CONFIG_PATH="$GITHUB_WORKSPACE/$INPUT_CONFIGFILE"
+echo "[DEBUG] Config Path: $CONFIG_PATH" > $DEBUG_OUT
+
+if [[ ! -e $CONFIG_PATH ]]; then
+	echo -e "${RED}The path provided in 'configFile' does not exist: $INPUT_CONFIGFILE${RESET}"
+	echo "'configFile' is resolved relative to the workflow context, i.e. it usually starts with the name of the repository."
+	exit 1
+fi
+
+# the input modes of Gobra are mutually exclusive
+CONFLICTING_INPUTS=""
+if [[ $INPUT_FILES ]]; then CONFLICTING_INPUTS="$CONFLICTING_INPUTS files"; fi
+if [[ $INPUT_PACKAGES ]]; then CONFLICTING_INPUTS="$CONFLICTING_INPUTS packages"; fi
+if [[ $INPUT_RECURSIVE -eq 1 ]]; then CONFLICTING_INPUTS="$CONFLICTING_INPUTS recursive"; fi
+if [[ $CONFLICTING_INPUTS ]]; then
+	echo -e "${RED}The input 'configFile' cannot be combined with:$CONFLICTING_INPUTS${RESET}"
+	echo "In config file mode, the files or packages to verify are specified in the JSON config."
+	exit 1
+fi
+
+# all remaining options of Gobra come from the JSON config, so point out the inputs that have no effect
+recordIgnoredInput 'projectLocation' "$INPUT_PROJECTLOCATION" ''
+recordIgnoredInput 'includePaths' "$INPUT_INCLUDEPATHS" ''
+recordIgnoredInput 'excludePackages' "$INPUT_EXCLUDEPACKAGES" ''
+recordIgnoredInput 'module' "$INPUT_MODULE" ''
+recordIgnoredInput 'caching' "$INPUT_CACHING" '0'
+recordIgnoredInput 'enableFriendClauses' "$INPUT_ENABLEFRIENDCLAUSES" '0'
+recordIgnoredInput 'respectFunctionPrePermAmounts' "$INPUT_RESPECTFUNCTIONPREPERMAMOUNTS" '0'
+recordIgnoredInput 'overflow' "$INPUT_OVERFLOW" '0'
+recordIgnoredInput 'chop' "$INPUT_CHOP" '1'
+recordIgnoredInput 'viperBackend' "$INPUT_VIPERBACKEND" 'SILICON'
+recordIgnoredInput 'headerOnly' "$INPUT_HEADERONLY" '0'
+recordIgnoredInput 'assumeInjectivityOnInhale' "$INPUT_ASSUMEINJECTIVITYONINHALE" '1'
+recordIgnoredInput 'checkConsistency' "$INPUT_CHECKCONSISTENCY" '0'
+recordIgnoredInput 'mceMode' "$INPUT_MCEMODE" 'on'
+recordIgnoredInput 'parallelizeBranches' "$INPUT_PARALLELIZEBRANCHES" '0'
+recordIgnoredInput 'requireTriggers' "$INPUT_REQUIRETRIGGERS" '0'
+recordIgnoredInput 'conditionalizePermissions' "$INPUT_CONDITIONALIZEPERMISSIONS" '0'
+recordIgnoredInput 'disableNL' "$INPUT_DISABLENL" '0'
+recordIgnoredInput 'moreJoins' "$INPUT_MOREJOINS" 'off'
+recordIgnoredInput 'unsafeWildcardOptimization' "$INPUT_UNSAFEWILDCARDOPTIMIZATION" '0'
+recordIgnoredInput 'useZ3API' "$INPUT_USEZ3API" '0'
+
+if [[ $IGNORED_INPUTS ]]; then
+	echo -e "${YELLOW}Warning: the following inputs have no effect in config file mode:$IGNORED_INPUTS${RESET}"
+	echo "In config file mode, all options of Gobra are read from 'gobra.json' and 'gobra-mod.json'."
+	echo "Options without a dedicated field in the JSON config can be set via their 'other' field."
+fi
+
+GOBRA_ARGS="--config $CONFIG_PATH"
+
+if [[ $INPUT_PRINTCONFIG -eq 1 ]]; then
+	GOBRA_ARGS="$GOBRA_ARGS --printConfig"
+fi
+
+else
+
+# `printConfig` is only supported by Gobra in combination with `--config`
+if [[ $INPUT_PRINTCONFIG -eq 1 ]]; then
+	echo -e "${RED}The input 'printConfig' requires the input 'configFile' to be set.${RESET}"
+	exit 1
+fi
+
+GOBRA_ARGS="--backend $INPUT_VIPERBACKEND --chop $INPUT_CHOP"
 
 if [[ $INPUT_RECURSIVE -eq 1 ]]; then
 	GOBRA_ARGS="--recursive --projectRoot $PROJECT_LOCATION $GOBRA_ARGS"
@@ -155,6 +236,8 @@ else
 	echo "[DEBUG] path to stats file was NOT passed" > $DEBUG_OUT
 fi
 
+fi # end of the distinction between config file mode and the remaining input modes
+
 START_TIME=$SECONDS
 EXIT_CODE=0
 
@@ -170,7 +253,14 @@ if [ $EXIT_CODE -eq 0 ]; then
 	# if verification succeeded and the user expects a stats file, then
 	# put it in the expected place
 	if [[ $INPUT_STATSFILE ]]; then
-		mv /tmp/stats.json $STATS_TARGET
+		if [[ -f /tmp/stats.json ]]; then
+			mv /tmp/stats.json $STATS_TARGET
+		else
+			echo -e "${YELLOW}Warning: Gobra did not generate a stats file${RESET}"
+			if [[ $INPUT_CONFIGFILE ]]; then
+				echo "In config file mode, the stats file has to be requested in the JSON config, e.g. with \"other\": [\"-g\", \"/tmp/\"]."
+			fi
+		fi
 	fi
 else
 	if [ $EXIT_CODE -eq 124 ]; then

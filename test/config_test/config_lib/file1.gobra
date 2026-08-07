@@ -1,0 +1,13 @@
+// Any copyright is dedicated to the Public Domain.
+// http://creativecommons.org/publicdomain/zero/1.0/
+
+// This package is imported by `config_pkg1` to check that the include paths
+// declared in `gobra-mod.json` are resolved relative to that file.
+
+package config_lib
+
+ensures res == 1
+decreases
+pure func One() (res int) {
+	return 1
+}
