@@ -50,106 +50,22 @@ findModuleConfig () (
 	done
 )
 
-if [[ $INPUT_CONFIGFILE ]]; then
-
-# Config file mode. Gobra reads all of its options from `gobra.json` and `gobra-mod.json`.
-# `--config` must not be combined with any other option of Gobra (except for `--printConfig`),
-# thus, none of the options derived from the remaining inputs are passed on.
-
-# `configFile` is relative to the workflow context, just like `projectLocation`.
-CONFIG_PATH="$GITHUB_WORKSPACE/$INPUT_CONFIGFILE"
-echo "[DEBUG] Config Path: $CONFIG_PATH" > $DEBUG_OUT
-
-if [[ ! -e $CONFIG_PATH ]]; then
-	echo -e "${RED}The path provided in 'configFile' does not exist: $INPUT_CONFIGFILE${RESET}"
-	echo "'configFile' is resolved relative to the workflow context, i.e. it usually starts with the name of the repository."
-	exit 1
-fi
-
-# the input modes of Gobra are mutually exclusive
-CONFLICTING_INPUTS=""
-if [[ $INPUT_FILES ]]; then CONFLICTING_INPUTS="$CONFLICTING_INPUTS files"; fi
-if [[ $INPUT_PACKAGES ]]; then CONFLICTING_INPUTS="$CONFLICTING_INPUTS packages"; fi
-if [[ $INPUT_RECURSIVE -eq 1 ]]; then CONFLICTING_INPUTS="$CONFLICTING_INPUTS recursive"; fi
-if [[ $CONFLICTING_INPUTS ]]; then
-	echo -e "${RED}The input 'configFile' cannot be combined with:$CONFLICTING_INPUTS${RESET}"
-	echo "In config file mode, the files or packages to verify are specified in the JSON config."
-	exit 1
-fi
-
-# `IGNORED_INPUTS` is computed by the outer entrypoint, which compares the inputs
-# against the defaults declared in `action.yml`.
-if [[ $IGNORED_INPUTS ]]; then
-	echo -e "${YELLOW}Warning: the following inputs have no effect in config file mode:$IGNORED_INPUTS${RESET}"
-	echo "In config file mode, all options of Gobra are read from 'gobra.json' and 'gobra-mod.json'."
-	echo "Options without a dedicated field in the JSON config can be set via their 'other' field."
-fi
-
-# `--cacheFile` and `-g` have no dedicated field in the JSON config and cannot be passed
-# on the command line next to `--config`. To keep the `caching` and `statsFile` inputs
-# working, they are added to the `other` field of a generated copy of the job config.
-# The copy is placed next to the original so that the relative paths within the JSON and
-# the lookup of `gobra-mod.json` resolve exactly as they would for the original.
-if [[ -f $CONFIG_PATH ]]; then
-	JOB_CONFIG="$CONFIG_PATH"
-	CONFIG_DIR=$(dirname "$CONFIG_PATH")
-else
-	JOB_CONFIG="$CONFIG_PATH/gobra.json"
-	CONFIG_DIR="$CONFIG_PATH"
-fi
-
-# the options that the user already set take precedence over the ones derived from the inputs
-EXISTING_OTHER=""
-if [[ -f $JOB_CONFIG ]]; then
-	EXISTING_OTHER="$EXISTING_OTHER $(jq -r '(.other // []) | join(" ")' "$JOB_CONFIG")"
-fi
-MODULE_CONFIG=$(findModuleConfig "$CONFIG_DIR")
-if [[ -f $MODULE_CONFIG ]]; then
-	EXISTING_OTHER="$EXISTING_OTHER $(jq -r '(.default_job_cfg.other // []) | join(" ")' "$MODULE_CONFIG")"
-fi
-echo "[DEBUG] Options already set in the JSON config: $EXISTING_OTHER" > $DEBUG_OUT
-
-EXTRA_ARGS=()
-if [[ $INPUT_CACHING -eq 1 ]] && ! grep -qE -- '(^| )--cacheFile( |$)' <<< "$EXISTING_OTHER"; then
-	EXTRA_ARGS+=("--cacheFile" ".gobra/cache.json")
-fi
-if [[ $INPUT_STATSFILE ]] && ! grep -qE -- '(^| )(-g|--gobraDirectory)( |$)' <<< "$EXISTING_OTHER"; then
-	EXTRA_ARGS+=("-g" "/tmp/")
-fi
-
-if [[ ${#EXTRA_ARGS[@]} -gt 0 ]]; then
-	GENERATED_CONFIG="$CONFIG_DIR/.gobra-action-generated.json"
-	# the generated config must not outlive this run, as it is written into the workspace
-	trap 'rm -f "$GENERATED_CONFIG"' EXIT
-	BASE_CONFIG='{}'
-	if [[ -f $JOB_CONFIG ]]; then
-		BASE_CONFIG=$(cat "$JOB_CONFIG")
-	fi
-	EXTRA_ARGS_JSON=$(printf '%s\n' "${EXTRA_ARGS[@]}" | jq -R . | jq -s .)
-	if ! echo "$BASE_CONFIG" | jq --argjson extra "$EXTRA_ARGS_JSON" \
-		'.other = ((.other // []) + $extra)' > "$GENERATED_CONFIG"; then
-		echo -e "${RED}Failed to extend the JSON config with the options ${EXTRA_ARGS[*]}${RESET}"
-		exit 1
-	fi
-	echo "[DEBUG] Generated config: $(cat "$GENERATED_CONFIG")" > $DEBUG_OUT
-	CONFIG_PATH="$GENERATED_CONFIG"
-fi
-
-GOBRA_ARGS="--config $CONFIG_PATH"
-
-if [[ $INPUT_PRINTCONFIG -eq 1 ]]; then
-	GOBRA_ARGS="$GOBRA_ARGS --printConfig"
-fi
-
-else
-
 # `printConfig` is only supported by Gobra in combination with `--config`
-if [[ $INPUT_PRINTCONFIG -eq 1 ]]; then
+if [[ $INPUT_PRINTCONFIG -eq 1 && ! $INPUT_CONFIGFILE ]]; then
 	echo -e "${RED}The input 'printConfig' requires the input 'configFile' to be set.${RESET}"
 	exit 1
 fi
 
-GOBRA_ARGS="--backend $INPUT_VIPERBACKEND --chop $INPUT_CHOP"
+GOBRA_ARGS=""
+
+
+if [[ $INPUT_VIPERBACKEND ]]; then
+	GOBRA_ARGS="$GOBRA_ARGS --backend $INPUT_VIPERBACKEND"
+fi
+
+if [[ $INPUT_CHOP ]]; then
+	GOBRA_ARGS="$GOBRA_ARGS --chop $INPUT_CHOP"
+fi
 
 if [[ $INPUT_RECURSIVE -eq 1 ]]; then
 	GOBRA_ARGS="--recursive --projectRoot $PROJECT_LOCATION $GOBRA_ARGS"
@@ -157,7 +73,7 @@ fi
 
 if [[ $INPUT_RESPECTFUNCTIONPREPERMAMOUNTS -eq 1 ]]; then
 	GOBRA_ARGS="--respectFunctionPrePermAmounts $GOBRA_ARGS"
-else
+elif [[ $INPUT_RESPECTFUNCTIONPREPERMAMOUNTS ]]; then
 	GOBRA_ARGS="--norespectFunctionPrePermAmounts $GOBRA_ARGS"
 fi
 
@@ -181,11 +97,12 @@ if [[ $INPUT_INCLUDEPATHS ]]; then
 	echo "[DEBUG] Include Paths: $INPUT_INCLUDEPATHS" > $DEBUG_OUT
 	echo "[DEBUG] Resolved Paths: $RESOLVED_PATHS" > $DEBUG_OUT
 	GOBRA_ARGS="$GOBRA_ARGS -I $RESOLVED_PATHS"
-else
-	GOBRA_ARGS="$GOBRA_ARGS -I $PROJECT_LOCATION" 
+elif [[ ! $INPUT_CONFIGFILE ]]; then
+	# not a default of Gobra: without it, imports of the project would not resolve
+	GOBRA_ARGS="$GOBRA_ARGS -I $PROJECT_LOCATION"
 fi
 
-if [[ $INPUT_CACHING -eq 1 ]]; then
+if [[ $INPUT_CACHING -eq 1 && ! $INPUT_CONFIGFILE ]]; then
 	GOBRA_ARGS="$GOBRA_ARGS --cacheFile .gobra/cache.json"
 fi
 
@@ -211,12 +128,9 @@ fi
 #    GOBRA_ARGS="$GOBRA_ARGS --packageTimeout $INPUT_PACKAGETIMEOUT"
 # fi
 
-# The default mode in Gobra might change in the future.
-# Having both options explicitly avoids subtle changes of
-# behaviour if that happens.
 if [[ $INPUT_ASSUMEINJECTIVITYONINHALE -eq 1 ]]; then
 	GOBRA_ARGS="$GOBRA_ARGS --assumeInjectivityOnInhale"
-else
+elif [[ $INPUT_ASSUMEINJECTIVITYONINHALE ]]; then
 	GOBRA_ARGS="$GOBRA_ARGS --noassumeInjectivityOnInhale"
 fi
 
@@ -252,13 +166,15 @@ if [[ $INPUT_CONDITIONALIZEPERMISSIONS -eq 1 ]]; then
 	GOBRA_ARGS="$GOBRA_ARGS --conditionalizePermissions"
 fi
 
-GOBRA_ARGS="$GOBRA_ARGS --moreJoins $INPUT_MOREJOINS"
+if [[ $INPUT_MOREJOINS ]]; then
+	GOBRA_ARGS="$GOBRA_ARGS --moreJoins $INPUT_MOREJOINS"
+fi
 
 if [[ $INPUT_OVERFLOW -eq 1 ]]; then
 	GOBRA_ARGS="$GOBRA_ARGS --overflow"
 fi
 
-if [[ $INPUT_STATSFILE ]]; then
+if [[ $INPUT_STATSFILE && ! $INPUT_CONFIGFILE ]]; then
 	# We write the file to /tmp/ (which is easier then making gobra write directly
 	# to the STATS_TARGET, as doing so often causes Gobra to not generate a file) due
 	# to the lack of permissions. We later move this file to correct destination.
@@ -268,7 +184,77 @@ else
 	echo "[DEBUG] path to stats file was NOT passed" > $DEBUG_OUT
 fi
 
-fi # end of the distinction between config file mode and the remaining input modes
+if [[ $INPUT_CONFIGFILE ]]; then
+	# Config file mode. Gobra reads all of its options from `gobra.json` and `gobra-mod.json`.
+	# `--config` must not be combined with any other option of Gobra (except for `--printConfig`),
+	# which Gobra itself reports as an error for every option that is explicitly passed above.
+
+	# `configFile` is relative to the workflow context, just like `projectLocation`.
+	CONFIG_PATH="$GITHUB_WORKSPACE/$INPUT_CONFIGFILE"
+	echo "[DEBUG] Config Path: $CONFIG_PATH" > $DEBUG_OUT
+
+	if [[ ! -e $CONFIG_PATH ]]; then
+		echo -e "${RED}The path provided in 'configFile' does not exist: $INPUT_CONFIGFILE${RESET}"
+		echo "'configFile' is resolved relative to the workflow context, i.e. it usually starts with the name of the repository."
+		exit 1
+	fi
+
+	# `--cacheFile` and `-g` have no dedicated field in the JSON config and cannot be passed
+	# on the command line next to `--config`. To keep the `caching` and `statsFile` inputs
+	# working, they are added to the `other` field of a generated copy of the job config.
+	# The copy is placed next to the original so that the relative paths within the JSON and
+	# the lookup of `gobra-mod.json` resolve exactly as they would for the original.
+	if [[ -f $CONFIG_PATH ]]; then
+		JOB_CONFIG="$CONFIG_PATH"
+		CONFIG_DIR=$(dirname "$CONFIG_PATH")
+	else
+		JOB_CONFIG="$CONFIG_PATH/gobra.json"
+		CONFIG_DIR="$CONFIG_PATH"
+	fi
+
+	# the options that the user already set take precedence over the ones derived from the inputs
+	EXISTING_OTHER=""
+	if [[ -f $JOB_CONFIG ]]; then
+		EXISTING_OTHER="$EXISTING_OTHER $(jq -r '(.other // []) | join(" ")' "$JOB_CONFIG")"
+	fi
+	MODULE_CONFIG=$(findModuleConfig "$CONFIG_DIR")
+	if [[ -f $MODULE_CONFIG ]]; then
+		EXISTING_OTHER="$EXISTING_OTHER $(jq -r '(.default_job_cfg.other // []) | join(" ")' "$MODULE_CONFIG")"
+	fi
+	echo "[DEBUG] Options already set in the JSON config: $EXISTING_OTHER" > $DEBUG_OUT
+
+	EXTRA_ARGS=()
+	if [[ $INPUT_CACHING -eq 1 ]] && ! grep -qE -- '(^| )--cacheFile( |$)' <<< "$EXISTING_OTHER"; then
+		EXTRA_ARGS+=("--cacheFile" ".gobra/cache.json")
+	fi
+	if [[ $INPUT_STATSFILE ]] && ! grep -qE -- '(^| )(-g|--gobraDirectory)( |$)' <<< "$EXISTING_OTHER"; then
+		EXTRA_ARGS+=("-g" "/tmp/")
+	fi
+
+	if [[ ${#EXTRA_ARGS[@]} -gt 0 ]]; then
+		GENERATED_CONFIG="$CONFIG_DIR/.gobra-action-generated.json"
+		# the generated config must not outlive this run, as it is written into the workspace
+		trap 'rm -f "$GENERATED_CONFIG"' EXIT
+		BASE_CONFIG='{}'
+		if [[ -f $JOB_CONFIG ]]; then
+			BASE_CONFIG=$(cat "$JOB_CONFIG")
+		fi
+		EXTRA_ARGS_JSON=$(printf '%s\n' "${EXTRA_ARGS[@]}" | jq -R . | jq -s .)
+		if ! echo "$BASE_CONFIG" | jq --argjson extra "$EXTRA_ARGS_JSON" \
+			'.other = ((.other // []) + $extra)' > "$GENERATED_CONFIG"; then
+			echo -e "${RED}Failed to extend the JSON config with the options ${EXTRA_ARGS[*]}${RESET}"
+			exit 1
+		fi
+		echo "[DEBUG] Generated config: $(cat "$GENERATED_CONFIG")" > $DEBUG_OUT
+		CONFIG_PATH="$GENERATED_CONFIG"
+	fi
+
+	GOBRA_ARGS="$GOBRA_ARGS --config $CONFIG_PATH"
+
+	if [[ $INPUT_PRINTCONFIG -eq 1 ]]; then
+		GOBRA_ARGS="$GOBRA_ARGS --printConfig"
+	fi
+fi
 
 START_TIME=$SECONDS
 EXIT_CODE=0

@@ -53,7 +53,7 @@ Like `projectLocation`, `configFile` is resolved relative to the workflow contex
     timeout: 1h
 ```
 
-In this mode, Gobra reads **all** of its options from the JSON files, so the other Gobra options of this Action have no effect and the Action warns about the ones that were set. Options without a dedicated field in the JSON config can still be set via the `other` field:
+In this mode, Gobra reads **all** of its options from the JSON files. Setting any other Gobra option of this Action next to `configFile` is reported as an error by Gobra, rather than being silently ignored. Options without a dedicated field in the JSON config can still be set via the `other` field:
 
 ```json
 {

@@ -118,32 +118,6 @@ jobs:
             echo "The generated config file was left behind in the workspace: $LEFTOVER"
             exit 1
           fi
-      - name: Test that defaults.awk agrees with action.yml
-        run: |
-          awk -f defaults.awk action.yml > /tmp/parsed.tsv
-          python3 - <<'EOF'
-          import yaml
-          inputs = yaml.safe_load(open('action.yml'))['inputs']
-          parsed = {}
-          for line in open('/tmp/parsed.tsv'):
-              line = line.rstrip('\n')
-              if not line:
-                  continue
-              name, _, default = line.partition('\t')
-              parsed[name] = default
-          errors = []
-          missing = set(inputs) ^ set(parsed)
-          if missing:
-              errors.append('inputs only found in one of the two: %s' % sorted(missing))
-          for name, spec in inputs.items():
-              expected = str((spec or {}).get('default', ''))
-              if parsed.get(name) != expected:
-                  errors.append('%s: defaults.awk gave %r, action.yml declares %r'
-                                % (name, parsed.get(name), expected))
-          if errors:
-              raise SystemExit('\n'.join(errors))
-          print('defaults.awk agrees with action.yml for %d inputs' % len(inputs))
-          EOF
       - name: Test that configFile reports an error when combined with another input mode
         id: config-conflict
         continue-on-error: true
@@ -156,6 +130,19 @@ jobs:
         if: steps.config-conflict.outcome == 'success'
         run: |
           echo "Expected the Action to reject 'configFile' in combination with 'files'"
+          exit 1
+      - name: Test that configFile reports an error when combined with another option of Gobra
+        id: config-option-conflict
+        continue-on-error: true
+        uses: ./
+        with:
+          configFile: 'gobra-action/test/config_test/config_pkg1'
+          overflow: '1'
+          timeout: 2m
+      - name: Test that configFile reports an error when combined with another option of Gobra (assertion)
+        if: steps.config-option-conflict.outcome == 'success'
+        run: |
+          echo "Expected Gobra to reject 'configFile' in combination with 'overflow'"
           exit 1
       - name: Test that timeout reports an error
         continue-on-error: true
