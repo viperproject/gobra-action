@@ -53,16 +53,18 @@ Like `projectLocation`, `configFile` is resolved relative to the workflow contex
     timeout: 1h
 ```
 
-In this mode, Gobra reads **all** of its options from the JSON files, so the other Gobra options of this Action have no effect and the Action warns about the ones that were set. Options without a dedicated field in the JSON config, such as `--cacheFile` or `-g` for the statistics report, can be set via the `other` field:
+In this mode, Gobra reads **all** of its options from the JSON files, so the other Gobra options of this Action have no effect and the Action warns about the ones that were set. Options without a dedicated field in the JSON config can still be set via the `other` field:
 
 ```json
 {
   "overflow": true,
-  "other": ["--cacheFile", ".gobra/cache.json", "-g", "/tmp/"]
+  "other": ["--requireTriggers"]
 }
 ```
 
-The inputs that do not correspond to options of Gobra keep working as usual, i.e. `javaXss`, `javaXmx`, `timeout`, `imageName`, `imageVersion`, and `statsFile`.
+The inputs that do not correspond to options of Gobra keep working as usual, i.e. `javaXss`, `javaXmx`, `timeout`, `imageName`, and `imageVersion`.
+
+`caching` and `statsFile` also keep working: since `--cacheFile` and `-g` cannot be passed next to `--config`, the Action adds them to the `other` field of a generated copy of the job config, which it places next to the original and removes again after the run. If the JSON config already sets one of these two options, the value from the JSON config wins and the corresponding input is not applied.
 
 To inspect the configuration that Gobra resolves from the JSON files without verifying anything, set `printConfig: '1'`:
 

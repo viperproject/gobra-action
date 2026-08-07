@@ -37,15 +37,18 @@ else
 	PROJECT_LOCATION="$GITHUB_WORKSPACE/$REPOSITORY_NAME"
 fi
 
-# collects the names of the inputs that are ignored in config file mode
-IGNORED_INPUTS=""
-
-# records the input named $1 as ignored if its value ($2) differs from its default ($3)
-recordIgnoredInput () {
-	if [[ "$2" != "$3" ]]; then
-		IGNORED_INPUTS="$IGNORED_INPUTS $1"
-	fi
-}
+# returns the path of the `gobra-mod.json` that Gobra picks up for the directory $1,
+# i.e. the first one found in that directory or in one of its parent directories.
+findModuleConfig () (
+	local DIR="$1"
+	while [[ -n $DIR && $DIR != "/" ]]; do
+		if [[ -f "$DIR/gobra-mod.json" ]]; then
+			echo "$DIR/gobra-mod.json"
+			return
+		fi
+		DIR=$(dirname "$DIR")
+	done
+)
 
 if [[ $INPUT_CONFIGFILE ]]; then
 
@@ -74,33 +77,62 @@ if [[ $CONFLICTING_INPUTS ]]; then
 	exit 1
 fi
 
-# all remaining options of Gobra come from the JSON config, so point out the inputs that have no effect
-recordIgnoredInput 'projectLocation' "$INPUT_PROJECTLOCATION" ''
-recordIgnoredInput 'includePaths' "$INPUT_INCLUDEPATHS" ''
-recordIgnoredInput 'excludePackages' "$INPUT_EXCLUDEPACKAGES" ''
-recordIgnoredInput 'module' "$INPUT_MODULE" ''
-recordIgnoredInput 'caching' "$INPUT_CACHING" '0'
-recordIgnoredInput 'enableFriendClauses' "$INPUT_ENABLEFRIENDCLAUSES" '0'
-recordIgnoredInput 'respectFunctionPrePermAmounts' "$INPUT_RESPECTFUNCTIONPREPERMAMOUNTS" '0'
-recordIgnoredInput 'overflow' "$INPUT_OVERFLOW" '0'
-recordIgnoredInput 'chop' "$INPUT_CHOP" '1'
-recordIgnoredInput 'viperBackend' "$INPUT_VIPERBACKEND" 'SILICON'
-recordIgnoredInput 'headerOnly' "$INPUT_HEADERONLY" '0'
-recordIgnoredInput 'assumeInjectivityOnInhale' "$INPUT_ASSUMEINJECTIVITYONINHALE" '1'
-recordIgnoredInput 'checkConsistency' "$INPUT_CHECKCONSISTENCY" '0'
-recordIgnoredInput 'mceMode' "$INPUT_MCEMODE" 'on'
-recordIgnoredInput 'parallelizeBranches' "$INPUT_PARALLELIZEBRANCHES" '0'
-recordIgnoredInput 'requireTriggers' "$INPUT_REQUIRETRIGGERS" '0'
-recordIgnoredInput 'conditionalizePermissions' "$INPUT_CONDITIONALIZEPERMISSIONS" '0'
-recordIgnoredInput 'disableNL' "$INPUT_DISABLENL" '0'
-recordIgnoredInput 'moreJoins' "$INPUT_MOREJOINS" 'off'
-recordIgnoredInput 'unsafeWildcardOptimization' "$INPUT_UNSAFEWILDCARDOPTIMIZATION" '0'
-recordIgnoredInput 'useZ3API' "$INPUT_USEZ3API" '0'
-
+# `IGNORED_INPUTS` is computed by the outer entrypoint, which compares the inputs
+# against the defaults declared in `action.yml`.
 if [[ $IGNORED_INPUTS ]]; then
 	echo -e "${YELLOW}Warning: the following inputs have no effect in config file mode:$IGNORED_INPUTS${RESET}"
 	echo "In config file mode, all options of Gobra are read from 'gobra.json' and 'gobra-mod.json'."
 	echo "Options without a dedicated field in the JSON config can be set via their 'other' field."
+fi
+
+# `--cacheFile` and `-g` have no dedicated field in the JSON config and cannot be passed
+# on the command line next to `--config`. To keep the `caching` and `statsFile` inputs
+# working, they are added to the `other` field of a generated copy of the job config.
+# The copy is placed next to the original so that the relative paths within the JSON and
+# the lookup of `gobra-mod.json` resolve exactly as they would for the original.
+if [[ -f $CONFIG_PATH ]]; then
+	JOB_CONFIG="$CONFIG_PATH"
+	CONFIG_DIR=$(dirname "$CONFIG_PATH")
+else
+	JOB_CONFIG="$CONFIG_PATH/gobra.json"
+	CONFIG_DIR="$CONFIG_PATH"
+fi
+
+# the options that the user already set take precedence over the ones derived from the inputs
+EXISTING_OTHER=""
+if [[ -f $JOB_CONFIG ]]; then
+	EXISTING_OTHER="$EXISTING_OTHER $(jq -r '(.other // []) | join(" ")' "$JOB_CONFIG")"
+fi
+MODULE_CONFIG=$(findModuleConfig "$CONFIG_DIR")
+if [[ -f $MODULE_CONFIG ]]; then
+	EXISTING_OTHER="$EXISTING_OTHER $(jq -r '(.default_job_cfg.other // []) | join(" ")' "$MODULE_CONFIG")"
+fi
+echo "[DEBUG] Options already set in the JSON config: $EXISTING_OTHER" > $DEBUG_OUT
+
+EXTRA_ARGS=()
+if [[ $INPUT_CACHING -eq 1 ]] && ! grep -qE -- '(^| )--cacheFile( |$)' <<< "$EXISTING_OTHER"; then
+	EXTRA_ARGS+=("--cacheFile" ".gobra/cache.json")
+fi
+if [[ $INPUT_STATSFILE ]] && ! grep -qE -- '(^| )(-g|--gobraDirectory)( |$)' <<< "$EXISTING_OTHER"; then
+	EXTRA_ARGS+=("-g" "/tmp/")
+fi
+
+if [[ ${#EXTRA_ARGS[@]} -gt 0 ]]; then
+	GENERATED_CONFIG="$CONFIG_DIR/.gobra-action-generated.json"
+	# the generated config must not outlive this run, as it is written into the workspace
+	trap 'rm -f "$GENERATED_CONFIG"' EXIT
+	BASE_CONFIG='{}'
+	if [[ -f $JOB_CONFIG ]]; then
+		BASE_CONFIG=$(cat "$JOB_CONFIG")
+	fi
+	EXTRA_ARGS_JSON=$(printf '%s\n' "${EXTRA_ARGS[@]}" | jq -R . | jq -s .)
+	if ! echo "$BASE_CONFIG" | jq --argjson extra "$EXTRA_ARGS_JSON" \
+		'.other = ((.other // []) + $extra)' > "$GENERATED_CONFIG"; then
+		echo -e "${RED}Failed to extend the JSON config with the options ${EXTRA_ARGS[*]}${RESET}"
+		exit 1
+	fi
+	echo "[DEBUG] Generated config: $(cat "$GENERATED_CONFIG")" > $DEBUG_OUT
+	CONFIG_PATH="$GENERATED_CONFIG"
 fi
 
 GOBRA_ARGS="--config $CONFIG_PATH"
@@ -258,7 +290,8 @@ if [ $EXIT_CODE -eq 0 ]; then
 		else
 			echo -e "${YELLOW}Warning: Gobra did not generate a stats file${RESET}"
 			if [[ $INPUT_CONFIGFILE ]]; then
-				echo "In config file mode, the stats file has to be requested in the JSON config, e.g. with \"other\": [\"-g\", \"/tmp/\"]."
+				echo "In config file mode, the JSON config takes precedence, so the stats file is written"
+				echo "to the directory given by the '-g' option of its 'other' field, if that option is set."
 			fi
 		fi
 	fi

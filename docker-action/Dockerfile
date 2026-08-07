@@ -9,7 +9,8 @@ COPY entrypoint.sh /gobra/entrypoint.sh
 RUN chmod +x /gobra/entrypoint.sh
 RUN apt-get update && \
 	apt-get install -y \
-	libz3-java
+	libz3-java \
+	jq
 
 WORKDIR /gobra
 

@@ -104,6 +104,46 @@ jobs:
         run: |
           echo "Expected the verification of config_pkg2 to fail, since its gobra.json enables overflow checking"
           exit 1
+      - name: Verify Gobra files (config file mode, with caching and statistics)
+        uses: ./
+        with:
+          configFile: 'gobra-action/test/config_test/config_pkg1'
+          caching: '1'
+          statsFile: '/stats-config/'
+          timeout: 2m
+      - name: Test that the generated config file does not remain in the workspace
+        run: |
+          LEFTOVER=$(find test/config_test -name '.gobra-action-generated.json')
+          if [ -n "$LEFTOVER" ]; then
+            echo "The generated config file was left behind in the workspace: $LEFTOVER"
+            exit 1
+          fi
+      - name: Test that defaults.awk agrees with action.yml
+        run: |
+          awk -f defaults.awk action.yml > /tmp/parsed.tsv
+          python3 - <<'EOF'
+          import yaml
+          inputs = yaml.safe_load(open('action.yml'))['inputs']
+          parsed = {}
+          for line in open('/tmp/parsed.tsv'):
+              line = line.rstrip('\n')
+              if not line:
+                  continue
+              name, _, default = line.partition('\t')
+              parsed[name] = default
+          errors = []
+          missing = set(inputs) ^ set(parsed)
+          if missing:
+              errors.append('inputs only found in one of the two: %s' % sorted(missing))
+          for name, spec in inputs.items():
+              expected = str((spec or {}).get('default', ''))
+              if parsed.get(name) != expected:
+                  errors.append('%s: defaults.awk gave %r, action.yml declares %r'
+                                % (name, parsed.get(name), expected))
+          if errors:
+              raise SystemExit('\n'.join(errors))
+          print('defaults.awk agrees with action.yml for %d inputs' % len(inputs))
+          EOF
       - name: Test that configFile reports an error when combined with another input mode
         id: config-conflict
         continue-on-error: true
@@ -129,3 +169,10 @@ jobs:
           name: stats
           path: /stats/stats.json
           if-no-files-found: error # could also be 'warn' or 'ignore'
+      # fails if the `statsFile` input had no effect in config file mode
+      - name: Upload statistics report of the config file mode run
+        uses: actions/upload-artifact@v4
+        with:
+          name: stats-config
+          path: /stats-config/stats.json
+          if-no-files-found: error
