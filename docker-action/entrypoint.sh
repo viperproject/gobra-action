@@ -184,12 +184,6 @@ if [[ $INPUT_CONFIGFILE ]]; then
 	CONFIG_PATH="$GITHUB_WORKSPACE/$INPUT_CONFIGFILE"
 	echo "[DEBUG] Config Path: $CONFIG_PATH" > $DEBUG_OUT
 
-	if [[ ! -e $CONFIG_PATH ]]; then
-		echo -e "${RED}The path provided in 'configFile' does not exist: $INPUT_CONFIGFILE${RESET}"
-		echo "'configFile' is resolved relative to the workflow context, i.e. it usually starts with the name of the repository."
-		exit 1
-	fi
-
 	GOBRA_ARGS="$GOBRA_ARGS --config $CONFIG_PATH"
 fi
 
