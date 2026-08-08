@@ -64,7 +64,9 @@ In this mode, Gobra reads **all** of its options from the JSON files, and it rep
 
 The inputs that do not configure Gobra itself keep working: `javaXss` and `javaXmx` size the JVM, `timeout` bounds how long the step may run, and `imageName` and `imageVersion` select the Gobra image.
 
-Caching and the statistics report are not available in this mode, because Gobra's JSON config has no field for `--cacheFile` and `-g`, and neither can be passed next to `--config`. Setting `caching` therefore fails the step, and `statsFile` is ignored without a statistics report being generated.
+`statsFile` also keeps working. Gobra's JSON config has no field for `-g` and it cannot be passed next to `--config`, so the Action adds it to the `other` field of a generated copy of the job config, which it places next to the original and removes again after the run. A `-g` in the job config itself takes precedence over the input.
+
+Caching is not available in this mode, since Gobra's JSON config has no field for `--cacheFile` either and the Action does not work around it. Setting `caching` next to `configFile` therefore fails the step.
 
 To inspect the configuration that Gobra resolves from the JSON files without verifying anything, set `printConfig: '1'`:
 

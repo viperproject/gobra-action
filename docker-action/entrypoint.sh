@@ -164,9 +164,8 @@ if [[ $INPUT_OVERFLOW -eq 1 ]]; then
 	GOBRA_ARGS="$GOBRA_ARGS --overflow"
 fi
 
-# `statsFile` has a default, so passing `-g` would conflict with `--config` on every
-# run in config file mode. Gobra has no JSON field for it, so no stats file is
-# generated there until Gobra gains one.
+# In config file mode, `-g` is added to the JSON config further below instead, since it
+# must not be passed on the command line next to `--config`.
 if [[ $INPUT_STATSFILE && ! $INPUT_CONFIGFILE ]]; then
 	# We write the file to /tmp/ (which is easier then making gobra write directly
 	# to the STATS_TARGET, as doing so often causes Gobra to not generate a file) due
@@ -181,12 +180,44 @@ if [[ $INPUT_CONFIGFILE ]]; then
 	# Config file mode. Gobra reads all of its options from `gobra.json` and `gobra-mod.json`.
 	# `--config` must not be combined with any other option of Gobra (except for `--printConfig`),
 	# which Gobra itself reports as an error for every option that is explicitly passed above.
-	# `caching` therefore reports an error too: Gobra has no JSON field for `--cacheFile` yet.
+	# `caching` therefore reports an error: Gobra has no JSON field for `--cacheFile` yet.
 
 	# `configFile` is relative to the directory in which the repository is checked out.
 	# A leading '/' is stripped, i.e. an absolute path is treated as relative to it as well.
 	CONFIG_PATH="$REPOSITORY_ROOT/${INPUT_CONFIGFILE#/}"
 	echo "[DEBUG] Config Path: $CONFIG_PATH" > $DEBUG_OUT
+
+	# `-g` has no dedicated field in the JSON config and cannot be passed on the command
+	# line next to `--config`, so it is added to the `other` field of a generated copy of
+	# the job config. The copy is placed next to the original, so that the relative paths
+	# within it and the lookup of `gobra-mod.json` resolve as they do for the original.
+	if [[ -f $CONFIG_PATH ]]; then
+		JOB_CONFIG="$CONFIG_PATH"
+		CONFIG_DIR=$(dirname "$CONFIG_PATH")
+	else
+		JOB_CONFIG="$CONFIG_PATH/gobra.json"
+		CONFIG_DIR="$CONFIG_PATH"
+	fi
+
+	BASE_CONFIG='{}'
+	if [[ -f $JOB_CONFIG ]]; then
+		BASE_CONFIG=$(cat "$JOB_CONFIG")
+	fi
+
+	# A `-g` in the job config itself takes precedence, also because the option appearing
+	# twice within the same `other` field would make Gobra reject it. A `-g` in the module
+	# config is overruled, since the job config takes precedence over it in Gobra.
+	if [[ $INPUT_STATSFILE ]] && ! jq -e '(.other // []) | any(. == "-g" or . == "--gobraDirectory")' <<< "$BASE_CONFIG" > /dev/null; then
+		GENERATED_CONFIG="$CONFIG_DIR/.gobra-action-generated.json"
+		# the generated config must not outlive this run, as it is written into the workspace
+		trap 'rm -f "$GENERATED_CONFIG"' EXIT
+		if ! jq '.other = ((.other // []) + ["-g", "/tmp/"])' <<< "$BASE_CONFIG" > "$GENERATED_CONFIG"; then
+			echo -e "${RED}Failed to add the stats file option to the JSON config${RESET}"
+			exit 1
+		fi
+		echo "[DEBUG] Generated config: $(cat "$GENERATED_CONFIG")" > $DEBUG_OUT
+		CONFIG_PATH="$GENERATED_CONFIG"
+	fi
 
 	GOBRA_ARGS="$GOBRA_ARGS --config $CONFIG_PATH"
 fi

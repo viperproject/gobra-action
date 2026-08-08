@@ -109,6 +109,19 @@ jobs:
         run: |
           echo "Expected the verification of config_pkg2 to fail, since its gobra.json enables overflow checking"
           exit 1
+      - name: Verify Gobra files (config file mode, with a statistics report)
+        uses: ./
+        with:
+          configFile: 'test/config_test/config_pkg1'
+          statsFile: '/stats-config/'
+          timeout: 2m
+      - name: Test that the generated config file does not remain in the workspace
+        run: |
+          LEFTOVER=$(find test/config_test -name '.gobra-action-generated.json')
+          if [ -n "$LEFTOVER" ]; then
+            echo "The generated config file was left behind in the workspace: $LEFTOVER"
+            exit 1
+          fi
       - name: Test that configFile reports an error when combined with another input mode
         id: config-conflict
         continue-on-error: true
@@ -147,3 +160,10 @@ jobs:
           name: stats
           path: /stats/stats.json
           if-no-files-found: error # could also be 'warn' or 'ignore'
+      # fails if the `statsFile` input had no effect in config file mode
+      - name: Upload statistics report of the config file mode run
+        uses: actions/upload-artifact@v4
+        with:
+          name: stats-config
+          path: /stats-config/stats.json
+          if-no-files-found: error
