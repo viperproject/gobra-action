@@ -8,7 +8,7 @@ inputs:
     description: 'Location in which the project is located in the workflow context. By default, it looks in a folder with the same name as the repository.'
     required: false
   configFile:
-    description: 'Path to a JSON configuration file of Gobra (`gobra.json`) or to a directory containing one. The path is relative to the workflow context, i.e. it usually starts with the name of the repository. When this input is set, Gobra runs in config file mode and reads all of its options from `gobra.json` and `gobra-mod.json`, so setting any other Gobra option of this Action is reported as an error by Gobra. A `gobra-mod.json` file must exist in the same directory or in one of its parent directories.'
+    description: 'Path to a JSON configuration file of Gobra (`gobra.json`) or to a directory containing one. The path is relative to the directory in which the repository is checked out; a leading `/` is ignored, so absolute paths are treated as relative to it as well. When this input is set, Gobra runs in config file mode and reads all of its options from `gobra.json` and `gobra-mod.json`, so setting any other Gobra option of this Action is reported as an error by Gobra. A `gobra-mod.json` file must exist in the same directory or in one of its parent directories.'
     required: false
   printConfig:
     description: 'Print the configuration resolved from the JSON config files and exit without verifying anything. Requires `configFile` to be set.'

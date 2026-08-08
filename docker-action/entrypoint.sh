@@ -31,10 +31,13 @@ getFileListInDir () (
 GOBRA_JAR="/gobra/gobra.jar"
 JAVA_ARGS="-Xss$INPUT_JAVAXSS -Xmx$INPUT_JAVAXMX -XX:-UseContainerSupport -Dcom.sun.management.jmxremote=false -jar $GOBRA_JAR"
 
+# the directory in which `actions/checkout` places the repository
+REPOSITORY_ROOT="$GITHUB_WORKSPACE/$REPOSITORY_NAME"
+
 if [[ $INPUT_PROJECTLOCATION ]]; then
 	PROJECT_LOCATION="$GITHUB_WORKSPACE/$INPUT_PROJECTLOCATION"
 else
-	PROJECT_LOCATION="$GITHUB_WORKSPACE/$REPOSITORY_NAME"
+	PROJECT_LOCATION="$REPOSITORY_ROOT"
 fi
 
 GOBRA_ARGS=""
@@ -180,8 +183,9 @@ if [[ $INPUT_CONFIGFILE ]]; then
 	# which Gobra itself reports as an error for every option that is explicitly passed above.
 	# `caching` therefore reports an error too: Gobra has no JSON field for `--cacheFile` yet.
 
-	# `configFile` is relative to the workflow context, just like `projectLocation`.
-	CONFIG_PATH="$GITHUB_WORKSPACE/$INPUT_CONFIGFILE"
+	# `configFile` is relative to the directory in which the repository is checked out.
+	# A leading '/' is stripped, i.e. an absolute path is treated as relative to it as well.
+	CONFIG_PATH="$REPOSITORY_ROOT/${INPUT_CONFIGFILE#/}"
 	echo "[DEBUG] Config Path: $CONFIG_PATH" > $DEBUG_OUT
 
 	GOBRA_ARGS="$GOBRA_ARGS --config $CONFIG_PATH"

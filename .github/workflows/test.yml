@@ -79,17 +79,22 @@ jobs:
       - name: Verify Gobra files (config file mode, directory containing a gobra.json)
         uses: ./
         with:
-          configFile: 'gobra-action/test/config_test/config_pkg1'
+          configFile: 'test/config_test/config_pkg1'
+          timeout: 2m
+      - name: Verify Gobra files (config file mode, path starting with a slash)
+        uses: ./
+        with:
+          configFile: '/test/config_test/config_pkg1'
           timeout: 2m
       - name: Verify Gobra files (config file mode, path to a gobra.json)
         uses: ./
         with:
-          configFile: 'gobra-action/test/config_test/config_pkg1/gobra.json'
+          configFile: 'test/config_test/config_pkg1/gobra.json'
           timeout: 2m
       - name: Print the configuration resolved from the JSON config files
         uses: ./
         with:
-          configFile: 'gobra-action/test/config_test/config_pkg1'
+          configFile: 'test/config_test/config_pkg1'
           printConfig: '1'
           timeout: 2m
       - name: Test that the options of the JSON config are applied
@@ -97,7 +102,7 @@ jobs:
         continue-on-error: true
         uses: ./
         with:
-          configFile: 'gobra-action/test/config_test/config_pkg2'
+          configFile: 'test/config_test/config_pkg2'
           timeout: 2m
       - name: Test that the options of the JSON config are applied (assertion)
         if: steps.config-overflow.outcome == 'success'
@@ -109,7 +114,7 @@ jobs:
         continue-on-error: true
         uses: ./
         with:
-          configFile: 'gobra-action/test/config_test/config_pkg1'
+          configFile: 'test/config_test/config_pkg1'
           files: 'test/files_test/file1.go'
           timeout: 2m
       - name: Test that configFile reports an error when combined with another input mode (assertion)
@@ -122,7 +127,7 @@ jobs:
         continue-on-error: true
         uses: ./
         with:
-          configFile: 'gobra-action/test/config_test/config_pkg1'
+          configFile: 'test/config_test/config_pkg1'
           overflow: '1'
           timeout: 2m
       - name: Test that configFile reports an error when combined with another option of Gobra (assertion)

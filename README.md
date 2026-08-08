@@ -43,17 +43,17 @@ This configuration shows how to set-up the Gobra Action to store the verificatio
 
 Gobra can read all of its options from JSON config files. The `configFile` input points either to a `gobra.json` file or to a directory containing one. A `gobra-mod.json` file, which holds the settings that are common to the entire module, must exist in the same directory or in one of its parent directories.
 
-Like `projectLocation`, `configFile` is resolved relative to the workflow context. Since `actions/checkout` places the repository in a folder named after the repository, the path usually starts with the name of the repository:
+`configFile` is resolved against the directory in which the repository is checked out. A leading `/` is ignored, so `go/pkg` and `/go/pkg` both refer to `go/pkg` within the repository:
 
 ```yaml
 - name: Verify the package described by go/pkg/gobra.json
   uses: viperproject/gobra-action@main
   with:
-    configFile: 'my-repository/go/pkg'
+    configFile: 'go/pkg'
     timeout: 1h
 ```
 
-In this mode, Gobra reads **all** of its options from the JSON files. Setting any other Gobra option of this Action next to `configFile` is reported as an error by Gobra, rather than being silently ignored. Options without a dedicated field in the JSON config can still be set via the `other` field:
+In this mode, Gobra reads **all** of its options from the JSON files, and it reports an error if one of them is passed on the command line as well. Setting `overflow`, `viperBackend`, `files` or any other input that maps to an option of Gobra therefore fails the step instead of being ignored. Options without a dedicated field in the JSON config can be set through its `other` field:
 
 ```json
 {
@@ -62,9 +62,9 @@ In this mode, Gobra reads **all** of its options from the JSON files. Setting an
 }
 ```
 
-The inputs that do not correspond to options of Gobra keep working as usual, i.e. `javaXss`, `javaXmx`, `timeout`, `imageName`, and `imageVersion`.
+The inputs that do not configure Gobra itself keep working: `javaXss` and `javaXmx` size the JVM, `timeout` bounds how long the step may run, and `imageName` and `imageVersion` select the Gobra image.
 
-Caching and the statistics report are not available in config file mode, since Gobra has no JSON field for `--cacheFile` and `-g` and neither can be passed next to `--config`. Setting `caching` is reported as an error, and no statistics report is generated.
+Caching and the statistics report are not available in this mode, because Gobra's JSON config has no field for `--cacheFile` and `-g`, and neither can be passed next to `--config`. Setting `caching` therefore fails the step, and `statsFile` is ignored without a statistics report being generated.
 
 To inspect the configuration that Gobra resolves from the JSON files without verifying anything, set `printConfig: '1'`:
 
@@ -72,7 +72,7 @@ To inspect the configuration that Gobra resolves from the JSON files without ver
 - name: Print the resolved configuration
   uses: viperproject/gobra-action@main
   with:
-    configFile: 'my-repository/go/pkg'
+    configFile: 'go/pkg'
     printConfig: '1'
 ```
 
