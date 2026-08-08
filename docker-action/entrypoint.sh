@@ -50,12 +50,6 @@ findModuleConfig () (
 	done
 )
 
-# `printConfig` is only supported by Gobra in combination with `--config`
-if [[ $INPUT_PRINTCONFIG -eq 1 && ! $INPUT_CONFIGFILE ]]; then
-	echo -e "${RED}The input 'printConfig' requires the input 'configFile' to be set.${RESET}"
-	exit 1
-fi
-
 GOBRA_ARGS=""
 
 
@@ -71,10 +65,13 @@ if [[ $INPUT_RECURSIVE -eq 1 ]]; then
 	GOBRA_ARGS="--recursive --projectRoot $PROJECT_LOCATION $GOBRA_ARGS"
 fi
 
-if [[ $INPUT_RESPECTFUNCTIONPREPERMAMOUNTS -eq 1 ]]; then
+if [[ $INPUT_RESPECTFUNCTIONPREPERMAMOUNTS == "1" ]]; then
 	GOBRA_ARGS="--respectFunctionPrePermAmounts $GOBRA_ARGS"
-elif [[ $INPUT_RESPECTFUNCTIONPREPERMAMOUNTS ]]; then
+elif [[ $INPUT_RESPECTFUNCTIONPREPERMAMOUNTS == "0" ]]; then
 	GOBRA_ARGS="--norespectFunctionPrePermAmounts $GOBRA_ARGS"
+elif [[ $INPUT_RESPECTFUNCTIONPREPERMAMOUNTS ]]; then
+	echo -e "${RED}The input 'respectFunctionPrePermAmounts' must be either 0 or 1 but was '$INPUT_RESPECTFUNCTIONPREPERMAMOUNTS'${RESET}"
+	exit 1
 fi
 
 if [[ $INPUT_FILES ]]; then
@@ -128,10 +125,13 @@ fi
 #    GOBRA_ARGS="$GOBRA_ARGS --packageTimeout $INPUT_PACKAGETIMEOUT"
 # fi
 
-if [[ $INPUT_ASSUMEINJECTIVITYONINHALE -eq 1 ]]; then
+if [[ $INPUT_ASSUMEINJECTIVITYONINHALE == "1" ]]; then
 	GOBRA_ARGS="$GOBRA_ARGS --assumeInjectivityOnInhale"
-elif [[ $INPUT_ASSUMEINJECTIVITYONINHALE ]]; then
+elif [[ $INPUT_ASSUMEINJECTIVITYONINHALE == "0" ]]; then
 	GOBRA_ARGS="$GOBRA_ARGS --noassumeInjectivityOnInhale"
+elif [[ $INPUT_ASSUMEINJECTIVITYONINHALE ]]; then
+	echo -e "${RED}The input 'assumeInjectivityOnInhale' must be either 0 or 1 but was '$INPUT_ASSUMEINJECTIVITYONINHALE'${RESET}"
+	exit 1
 fi
 
 if [[ $INPUT_CHECKCONSISTENCY -eq 1 ]]; then
@@ -250,10 +250,11 @@ if [[ $INPUT_CONFIGFILE ]]; then
 	fi
 
 	GOBRA_ARGS="$GOBRA_ARGS --config $CONFIG_PATH"
+fi
 
-	if [[ $INPUT_PRINTCONFIG -eq 1 ]]; then
-		GOBRA_ARGS="$GOBRA_ARGS --printConfig"
-	fi
+# Gobra reports an error if this is used without `--config`
+if [[ $INPUT_PRINTCONFIG -eq 1 ]]; then
+	GOBRA_ARGS="$GOBRA_ARGS --printConfig"
 fi
 
 START_TIME=$SECONDS
