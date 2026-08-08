@@ -37,19 +37,6 @@ else
 	PROJECT_LOCATION="$GITHUB_WORKSPACE/$REPOSITORY_NAME"
 fi
 
-# returns the path of the `gobra-mod.json` that Gobra picks up for the directory $1,
-# i.e. the first one found in that directory or in one of its parent directories.
-findModuleConfig () (
-	local DIR="$1"
-	while [[ -n $DIR && $DIR != "/" ]]; do
-		if [[ -f "$DIR/gobra-mod.json" ]]; then
-			echo "$DIR/gobra-mod.json"
-			return
-		fi
-		DIR=$(dirname "$DIR")
-	done
-)
-
 GOBRA_ARGS=""
 
 
@@ -99,7 +86,7 @@ elif [[ ! $INPUT_CONFIGFILE ]]; then
 	GOBRA_ARGS="$GOBRA_ARGS -I $PROJECT_LOCATION"
 fi
 
-if [[ $INPUT_CACHING -eq 1 && ! $INPUT_CONFIGFILE ]]; then
+if [[ $INPUT_CACHING -eq 1 ]]; then
 	GOBRA_ARGS="$GOBRA_ARGS --cacheFile .gobra/cache.json"
 fi
 
@@ -174,6 +161,9 @@ if [[ $INPUT_OVERFLOW -eq 1 ]]; then
 	GOBRA_ARGS="$GOBRA_ARGS --overflow"
 fi
 
+# `statsFile` has a default, so passing `-g` would conflict with `--config` on every
+# run in config file mode. Gobra has no JSON field for it, so no stats file is
+# generated there until Gobra gains one.
 if [[ $INPUT_STATSFILE && ! $INPUT_CONFIGFILE ]]; then
 	# We write the file to /tmp/ (which is easier then making gobra write directly
 	# to the STATS_TARGET, as doing so often causes Gobra to not generate a file) due
@@ -188,6 +178,7 @@ if [[ $INPUT_CONFIGFILE ]]; then
 	# Config file mode. Gobra reads all of its options from `gobra.json` and `gobra-mod.json`.
 	# `--config` must not be combined with any other option of Gobra (except for `--printConfig`),
 	# which Gobra itself reports as an error for every option that is explicitly passed above.
+	# `caching` therefore reports an error too: Gobra has no JSON field for `--cacheFile` yet.
 
 	# `configFile` is relative to the workflow context, just like `projectLocation`.
 	CONFIG_PATH="$GITHUB_WORKSPACE/$INPUT_CONFIGFILE"
@@ -197,56 +188,6 @@ if [[ $INPUT_CONFIGFILE ]]; then
 		echo -e "${RED}The path provided in 'configFile' does not exist: $INPUT_CONFIGFILE${RESET}"
 		echo "'configFile' is resolved relative to the workflow context, i.e. it usually starts with the name of the repository."
 		exit 1
-	fi
-
-	# `--cacheFile` and `-g` have no dedicated field in the JSON config and cannot be passed
-	# on the command line next to `--config`. To keep the `caching` and `statsFile` inputs
-	# working, they are added to the `other` field of a generated copy of the job config.
-	# The copy is placed next to the original so that the relative paths within the JSON and
-	# the lookup of `gobra-mod.json` resolve exactly as they would for the original.
-	if [[ -f $CONFIG_PATH ]]; then
-		JOB_CONFIG="$CONFIG_PATH"
-		CONFIG_DIR=$(dirname "$CONFIG_PATH")
-	else
-		JOB_CONFIG="$CONFIG_PATH/gobra.json"
-		CONFIG_DIR="$CONFIG_PATH"
-	fi
-
-	# the options that the user already set take precedence over the ones derived from the inputs
-	EXISTING_OTHER=""
-	if [[ -f $JOB_CONFIG ]]; then
-		EXISTING_OTHER="$EXISTING_OTHER $(jq -r '(.other // []) | join(" ")' "$JOB_CONFIG")"
-	fi
-	MODULE_CONFIG=$(findModuleConfig "$CONFIG_DIR")
-	if [[ -f $MODULE_CONFIG ]]; then
-		EXISTING_OTHER="$EXISTING_OTHER $(jq -r '(.default_job_cfg.other // []) | join(" ")' "$MODULE_CONFIG")"
-	fi
-	echo "[DEBUG] Options already set in the JSON config: $EXISTING_OTHER" > $DEBUG_OUT
-
-	EXTRA_ARGS=()
-	if [[ $INPUT_CACHING -eq 1 ]] && ! grep -qE -- '(^| )--cacheFile( |$)' <<< "$EXISTING_OTHER"; then
-		EXTRA_ARGS+=("--cacheFile" ".gobra/cache.json")
-	fi
-	if [[ $INPUT_STATSFILE ]] && ! grep -qE -- '(^| )(-g|--gobraDirectory)( |$)' <<< "$EXISTING_OTHER"; then
-		EXTRA_ARGS+=("-g" "/tmp/")
-	fi
-
-	if [[ ${#EXTRA_ARGS[@]} -gt 0 ]]; then
-		GENERATED_CONFIG="$CONFIG_DIR/.gobra-action-generated.json"
-		# the generated config must not outlive this run, as it is written into the workspace
-		trap 'rm -f "$GENERATED_CONFIG"' EXIT
-		BASE_CONFIG='{}'
-		if [[ -f $JOB_CONFIG ]]; then
-			BASE_CONFIG=$(cat "$JOB_CONFIG")
-		fi
-		EXTRA_ARGS_JSON=$(printf '%s\n' "${EXTRA_ARGS[@]}" | jq -R . | jq -s .)
-		if ! echo "$BASE_CONFIG" | jq --argjson extra "$EXTRA_ARGS_JSON" \
-			'.other = ((.other // []) + $extra)' > "$GENERATED_CONFIG"; then
-			echo -e "${RED}Failed to extend the JSON config with the options ${EXTRA_ARGS[*]}${RESET}"
-			exit 1
-		fi
-		echo "[DEBUG] Generated config: $(cat "$GENERATED_CONFIG")" > $DEBUG_OUT
-		CONFIG_PATH="$GENERATED_CONFIG"
 	fi
 
 	GOBRA_ARGS="$GOBRA_ARGS --config $CONFIG_PATH"
@@ -276,10 +217,6 @@ if [ $EXIT_CODE -eq 0 ]; then
 			mv /tmp/stats.json $STATS_TARGET
 		else
 			echo -e "${YELLOW}Warning: Gobra did not generate a stats file${RESET}"
-			if [[ $INPUT_CONFIGFILE ]]; then
-				echo "In config file mode, the JSON config takes precedence, so the stats file is written"
-				echo "to the directory given by the '-g' option of its 'other' field, if that option is set."
-			fi
 		fi
 	fi
 else
