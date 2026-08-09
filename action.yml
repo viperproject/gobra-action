@@ -3,10 +3,15 @@ description: 'Verify your Go project with Gobra'
 inputs:
   caching:
     description: 'Enable caching of verification results. The possible values are 0 (disabled) and 1 (enabled).'
-    required: true
-    default: '0' # cache enabled by default
+    required: false
   projectLocation:
     description: 'Location in which the project is located in the workflow context. By default, it looks in a folder with the same name as the repository.'
+    required: false
+  configFile:
+    description: 'Path to a JSON configuration file of Gobra (`gobra.json`) or to a directory containing one. The path is relative to the directory in which the repository is checked out; a leading `/` is ignored, so absolute paths are treated as relative to it as well. When this input is set, Gobra runs in config file mode and reads all of its options from `gobra.json` and `gobra-mod.json`, so setting any other Gobra option of this Action is reported as an error by Gobra. A `gobra-mod.json` file must exist in the same directory or in one of its parent directories.'
+    required: false
+  printConfig:
+    description: 'Print the configuration resolved from the JSON config files and exit without verifying anything. Requires `configFile` to be set.'
     required: false
   includePaths:
     description: 'Directories used for package lookup. Their paths are relative to the project location.'
@@ -14,7 +19,6 @@ inputs:
   enableFriendClauses:
     description: 'Enable friend package invariants (experimental).'
     required: false
-    default:  '0'
   files:
     description: 'List of Go and Gobra files to verify.'
     required: false
@@ -27,22 +31,18 @@ inputs:
   recursive:
     description: 'Verify nested packages recursively'
     required: false
-    default:  '0'
   respectFunctionPrePermAmounts:
     description: 'Respects precise permission amounts in pure function preconditions instead of only checking read access, as done in older versions of Gobra. This option should be used for verifying legacy projects written with the old interpretation of fractional permissions. New projects are encouraged to set this flag to false.'
     required: false
-    default: '0'
   overflow:
     description: 'Check for arithmetic overflows in integer expressions.'
     required: false
-    default:  '0'
   chop:
     description: 'Maximum number of files in which a file can be split with the chopper feature of Gobra. Larger values may improve the verification time of large codebases.'
-    default: '1'
+    required: false
   viperBackend:
     description: 'Which Viper backend to use. Can be one of "SILICON", "VSWITHSILICON", "CARBON", and "VSWITHCARBON".'
-    required: true
-    default: "SILICON" # to allow caching by default
+    required: false
   javaXss:
     description: 'Java stack size. Should be increased in case of frequent stack overflows.'
     required: true
@@ -66,50 +66,39 @@ inputs:
   headerOnly:
     description: 'Whether Gobra should only verify files with the header "// +gobra".'
     required: false
-    default: '0'
   module:
     description: 'Name of current module that should be used for resolving imports.'
     required: false
   assumeInjectivityOnInhale:
     description: 'Assume injectivity of the receiver expression when inhaling quantified permissions, instead of checking it, like in Viper versions previous to 2022.02.'
     required: false
-    default: '1'
   checkConsistency:
     decription: 'Enforces additional consistency checks in the generated Viper code. Helpful to debug problems with the encoding of Gobra.'
     required: false
-    default: '0'
   mceMode:
     description: 'Exhale Mode used together with a silicon-based backend. It can be enabled ("on"), disabled("off"), or enabled on demand ("od").'
     required: false
-    default: 'on'
   parallelizeBranches:
     description: 'Parallelize branches in the silicon backend.'
     required: false
-    default: '0'
   requireTriggers:
     description: 'Require that all quantifiers have user-provided triggers.'
     required: false
-    default: '0'
   conditionalizePermissions:
     description: 'Tries to reduce the number of branches that Gobra has to deal with the option --conditionalizePermissions'
     required: false
-    default: '0'
   disableNL:
     description: 'Disable non-linear integer arithmetic. Non compatible yet with Carbon'
     required: false
-    default: '0'
   moreJoins:
     description: 'Specifies if silicon should be run with more joins completely enabled ("all"), disabled ("off"), or only for impure conditionals ("impure").'
     required: false
-    default: 'off'
   unsafeWildcardOptimization:
     description: "Perform the optimization described in silicon's PR #756. You must ensure that the necessary conditions for the optimization are met."
     required: false
-    default: '0'
   useZ3API:
     description: 'Use the Z3 API in silicon.'
     required: false
-    default: '0'
   statsFile:
     description: 'Path where the generated stats.json file will be stored'
     required: false

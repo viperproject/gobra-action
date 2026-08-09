@@ -1,0 +1,16 @@
+// Any copyright is dedicated to the Public Domain.
+// http://creativecommons.org/publicdomain/zero/1.0/
+
+// This package verifies with the options declared in `gobra.json` and
+// `gobra-mod.json`. In particular, it is free of overflows, which `gobra.json`
+// asks Gobra to check.
+
+package config_pkg1
+
+import "config_lib"
+
+requires 0 <= x && x < 100
+ensures res == x + 1
+func IncrementBounded(x int) (res int) {
+	return x + config_lib.One()
+}

@@ -1,0 +1,18 @@
+// Any copyright is dedicated to the Public Domain.
+// http://creativecommons.org/publicdomain/zero/1.0/
+
+// `AddLargeNumber` overflows for large values of `i`, so this package only
+// verifies when overflow checking is disabled. Since `gobra.json` enables it,
+// the verification of this package is expected to fail. This is how the
+// workflow checks that the options of the JSON config are actually applied.
+
+package config_pkg2
+
+func AddLargeNumber(i int) int {
+	return i + GetLargeNumber()
+}
+
+decreases
+pure func GetLargeNumber() int {
+	return 1000000000
+}

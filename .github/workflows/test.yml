@@ -55,7 +55,8 @@ jobs:
         uses: ./
         with:
           projectLocation: 'gobra-action/test/'
-          excludePackages: 'main timeout_test'
+          # the packages below `test/config_test` are verified via their JSON configs
+          excludePackages: 'main timeout_test config_lib config_pkg1 config_pkg2'
           recursive: '1'
           timeout: 2m
           checkConsistency: '1'
@@ -75,6 +76,78 @@ jobs:
           timeout: 2m
           mceMde: 'off'
           parallelizeBranches: 1
+      - name: Verify Gobra files (config file mode, directory containing a gobra.json)
+        uses: ./
+        with:
+          configFile: 'test/config_test/config_pkg1'
+          timeout: 2m
+      - name: Verify Gobra files (config file mode, path starting with a slash)
+        uses: ./
+        with:
+          configFile: '/test/config_test/config_pkg1'
+          timeout: 2m
+      - name: Verify Gobra files (config file mode, path to a gobra.json)
+        uses: ./
+        with:
+          configFile: 'test/config_test/config_pkg1/gobra.json'
+          timeout: 2m
+      - name: Print the configuration resolved from the JSON config files
+        uses: ./
+        with:
+          configFile: 'test/config_test/config_pkg1'
+          printConfig: '1'
+          timeout: 2m
+      - name: Test that the options of the JSON config are applied
+        id: config-overflow
+        continue-on-error: true
+        uses: ./
+        with:
+          configFile: 'test/config_test/config_pkg2'
+          timeout: 2m
+      - name: Test that the options of the JSON config are applied (assertion)
+        if: steps.config-overflow.outcome == 'success'
+        run: |
+          echo "Expected the verification of config_pkg2 to fail, since its gobra.json enables overflow checking"
+          exit 1
+      - name: Verify Gobra files (config file mode, with a statistics report)
+        uses: ./
+        with:
+          configFile: 'test/config_test/config_pkg1'
+          statsFile: '/stats-config/'
+          timeout: 2m
+      - name: Test that the generated config file does not remain in the workspace
+        run: |
+          LEFTOVER=$(find test/config_test -name '.gobra-action-generated.json')
+          if [ -n "$LEFTOVER" ]; then
+            echo "The generated config file was left behind in the workspace: $LEFTOVER"
+            exit 1
+          fi
+      - name: Test that configFile reports an error when combined with another input mode
+        id: config-conflict
+        continue-on-error: true
+        uses: ./
+        with:
+          configFile: 'test/config_test/config_pkg1'
+          files: 'test/files_test/file1.go'
+          timeout: 2m
+      - name: Test that configFile reports an error when combined with another input mode (assertion)
+        if: steps.config-conflict.outcome == 'success'
+        run: |
+          echo "Expected the Action to reject 'configFile' in combination with 'files'"
+          exit 1
+      - name: Test that configFile reports an error when combined with another option of Gobra
+        id: config-option-conflict
+        continue-on-error: true
+        uses: ./
+        with:
+          configFile: 'test/config_test/config_pkg1'
+          overflow: '1'
+          timeout: 2m
+      - name: Test that configFile reports an error when combined with another option of Gobra (assertion)
+        if: steps.config-option-conflict.outcome == 'success'
+        run: |
+          echo "Expected Gobra to reject 'configFile' in combination with 'overflow'"
+          exit 1
       - name: Test that timeout reports an error
         continue-on-error: true
         uses: ./
@@ -87,3 +160,10 @@ jobs:
           name: stats
           path: /stats/stats.json
           if-no-files-found: error # could also be 'warn' or 'ignore'
+      # fails if the `statsFile` input had no effect in config file mode
+      - name: Upload statistics report of the config file mode run
+        uses: actions/upload-artifact@v4
+        with:
+          name: stats-config
+          path: /stats-config/stats.json
+          if-no-files-found: error
