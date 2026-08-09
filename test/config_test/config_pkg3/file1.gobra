@@ -1,0 +1,17 @@
+// Any copyright is dedicated to the Public Domain.
+// http://creativecommons.org/publicdomain/zero/1.0/
+
+// This package imports a package that the include paths of `gobra-mod.json` do
+// not cover. It is found through the relative `-I` in the `other` field of
+// `gobra.json`, which checks that such a path is resolved relative to that
+// file and not relative to the workspace.
+
+package config_pkg3
+
+import "config_outside_lib"
+
+requires 0 <= x && x < 100
+ensures res == x + 2
+func AddTwo(x int) (res int) {
+	return x + config_outside_lib.Two()
+}

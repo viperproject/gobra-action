@@ -53,6 +53,8 @@ Gobra can read all of its options from JSON config files. The `configFile` input
     timeout: 1h
 ```
 
+Relative paths *within* the JSON files are relative to the file that declares them: the `includes`, `input_files`, `pkg_path` and `project_root` of a `gobra.json` are resolved against the directory of that `gobra.json`, and the ones of a `gobra-mod.json` against the directory of that `gobra-mod.json`. Gobra does not resolve the entries of the `other` field, since it parses them like command line arguments, so the Action runs Gobra with the directory of the job config as the working directory to make relative paths there relative to the `gobra.json` as well.
+
 In this mode, Gobra reads **all** of its options from the JSON files, and it reports an error if one of them is passed on the command line as well. Setting `overflow`, `viperBackend`, `files` or any other input that maps to an option of Gobra therefore fails the step instead of being ignored. Options without a dedicated field in the JSON config can be set through its `other` field:
 
 ```json

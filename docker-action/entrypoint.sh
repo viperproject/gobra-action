@@ -199,6 +199,15 @@ if [[ $INPUT_CONFIGFILE ]]; then
 		CONFIG_DIR="$CONFIG_PATH"
 	fi
 
+	# Gobra resolves the relative paths of the JSON fields against the file that declares
+	# them, but not the ones that appear in the `other` field, which it parses like command
+	# line arguments. Running Gobra from the directory of the job config makes those
+	# relative to the `gobra.json` as well. If the directory does not exist, we leave the
+	# working directory alone, so that Gobra reports that the config path does not exist.
+	if [[ -d $CONFIG_DIR ]]; then
+		GOBRA_WORKING_DIR="$CONFIG_DIR"
+	fi
+
 	BASE_CONFIG='{}'
 	if [[ -f $JOB_CONFIG ]]; then
 		BASE_CONFIG=$(cat "$JOB_CONFIG")
@@ -207,7 +216,7 @@ if [[ $INPUT_CONFIGFILE ]]; then
 	# A `-g` in the job config itself takes precedence, also because the option appearing
 	# twice within the same `other` field would make Gobra reject it. A `-g` in the module
 	# config is overruled, since the job config takes precedence over it in Gobra.
-	if [[ $INPUT_STATSFILE ]] && ! jq -e '(.other // []) | any(. == "-g" or . == "--gobraDirectory")' <<< "$BASE_CONFIG" > /dev/null; then
+	if [[ $INPUT_STATSFILE && -d $CONFIG_DIR ]] && ! jq -e '(.other // []) | any(. == "-g" or . == "--gobraDirectory")' <<< "$BASE_CONFIG" > /dev/null; then
 		GENERATED_CONFIG="$CONFIG_DIR/.gobra-action-generated.json"
 		# the generated config must not outlive this run, as it is written into the workspace
 		trap 'rm -f "$GENERATED_CONFIG"' EXIT
@@ -234,7 +243,12 @@ CMD="java $JAVA_ARGS $GOBRA_ARGS"
 
 echo $CMD
 
-timeout $INPUT_TIMEOUT $CMD
+if [[ $GOBRA_WORKING_DIR ]]; then
+	echo "[DEBUG] Working Directory: $GOBRA_WORKING_DIR" > $DEBUG_OUT
+	( cd -- "$GOBRA_WORKING_DIR" && timeout $INPUT_TIMEOUT $CMD )
+else
+	timeout $INPUT_TIMEOUT $CMD
+fi
 EXIT_CODE=$?
 
 if [ $EXIT_CODE -eq 0 ]; then

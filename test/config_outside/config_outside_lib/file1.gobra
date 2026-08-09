@@ -1,0 +1,15 @@
+// Any copyright is dedicated to the Public Domain.
+// http://creativecommons.org/publicdomain/zero/1.0/
+
+// This package lies outside of the include paths declared in
+// `test/config_test/gobra-mod.json`. `config_pkg3` reaches it through a
+// relative `-I` in the `other` field of its `gobra.json`, which only resolves
+// if Gobra runs with the directory of that file as its working directory.
+
+package config_outside_lib
+
+ensures res == 2
+decreases
+pure func Two() (res int) {
+	return 2
+}

@@ -56,7 +56,7 @@ jobs:
         with:
           projectLocation: 'gobra-action/test/'
           # the packages below `test/config_test` are verified via their JSON configs
-          excludePackages: 'main timeout_test config_lib config_pkg1 config_pkg2'
+          excludePackages: 'main timeout_test config_lib config_pkg1 config_pkg2 config_pkg3'
           recursive: '1'
           timeout: 2m
           checkConsistency: '1'
@@ -90,6 +90,13 @@ jobs:
         uses: ./
         with:
           configFile: 'test/config_test/config_pkg1/gobra.json'
+          timeout: 2m
+      - name: Verify Gobra files (config file mode, relative path in the 'other' field)
+        uses: ./
+        with:
+          # `gobra.json` reaches `config_outside_lib` through a relative `-I`, which only
+          # resolves if relative paths of the `other` field are relative to that file
+          configFile: 'test/config_test/config_pkg3'
           timeout: 2m
       - name: Print the configuration resolved from the JSON config files
         uses: ./
