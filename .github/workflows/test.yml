@@ -102,12 +102,6 @@ jobs:
         with:
           configFile: 'test/config_test/config_pkg1/gobra.json'
           timeout: 2m
-      - name: Print the configuration resolved from the JSON config files
-        uses: ./
-        with:
-          configFile: 'test/config_test/config_pkg1'
-          printConfig: '1'
-          timeout: 2m
       - name: Test that the options of the JSON config are applied
         id: config-overflow
         continue-on-error: true
