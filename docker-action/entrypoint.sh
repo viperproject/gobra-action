@@ -1,11 +1,13 @@
 #!/bin/bash
 
-DEBUG_MODE=0
+# set the `DEBUG_MODE` environment variable of the workflow step to 1 to see the
+# debug output; the outer entrypoint passes the variable on to this container
+DEBUG_MODE=${DEBUG_MODE:-0}
 
 if [[ $DEBUG_MODE -eq 1 ]]; then
 	DEBUG_OUT="/dev/stdout"
 else
-	DEBUG_OUT="/dev/nil"
+	DEBUG_OUT="/dev/null"
 fi
 
 RED='\033[0;31m'
@@ -27,6 +29,22 @@ getFileListInDir () (
 	# the list of paths to be processed.
 	echo "${@:2}" | xargs realpath | tr '\n' ' '
 )
+
+# reports the verification time in seconds ($1) that the action returns as its `time`
+# output. This script runs in a container that is started by the container of the action
+# itself, so the runner's file commands are not reachable from here: $GITHUB_OUTPUT is
+# unset (which made writing to it fail on every run) and the path it holds in the outer
+# container is not mounted into this one. The time is therefore reported on stdout, and
+# /entrypoint.sh of the outer container parses that line to produce the output of the
+# action, so its wording is part of the interface between the two scripts. The variable
+# is still honored if it happens to be set, e.g. when this image is run directly instead
+# of through the action.
+reportTime () {
+	if [[ -n $GITHUB_OUTPUT ]]; then
+		echo "time=$1" >> "$GITHUB_OUTPUT"
+	fi
+	echo "Gobra action: verification took ${1}s"
+}
 
 GOBRA_JAR="/gobra/gobra.jar"
 JAVA_ARGS="-Xss$INPUT_JAVAXSS -Xmx$INPUT_JAVAXMX -XX:-UseContainerSupport -Dcom.sun.management.jmxremote=false -jar $GOBRA_JAR"
@@ -242,7 +260,6 @@ if [[ $INPUT_CONFIGFILE ]]; then
 		else
 			echo -e "${RED}Failed to print the configuration resolved from the JSON config files${RESET}"
 		fi
-		echo "time=0" >> "$GITHUB_OUTPUT"
 		exit $PRINT_CONFIG_EXIT_CODE
 	fi
 fi
@@ -278,7 +295,7 @@ fi
 
 TIME_PASSED=$(( SECONDS - START_TIME ))
 
-echo "time=$TIME_PASSED" >> "$GITHUB_OUTPUT"
+reportTime "$TIME_PASSED"
 
 echo "[DEBUG] Contents of /tmp/:" > $DEBUG_OUT
 ls -la /tmp/ > $DEBUG_OUT
