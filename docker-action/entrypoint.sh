@@ -260,8 +260,6 @@ if [[ $INPUT_CONFIGFILE ]]; then
 		else
 			echo -e "${RED}Failed to print the configuration resolved from the JSON config files${RESET}"
 		fi
-		# `reportTime` is deliberately not called here: nothing was verified, so there is
-		# no time to report and the `time` output of the action is left unset
 		echo -e "${RED}Nothing was verified, so the action reports no time${RESET}"
 		exit $PRINT_CONFIG_EXIT_CODE
 	fi
