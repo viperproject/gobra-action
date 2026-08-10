@@ -28,6 +28,21 @@ getFileListInDir () (
 	echo "${@:2}" | xargs realpath | tr '\n' ' '
 )
 
+# reports the time in seconds ($1) that the action should return as its `time` output.
+# This script runs in a container that is started by the container of the action itself,
+# so the runner's file commands are not reachable from here: $GITHUB_OUTPUT is unset
+# (which made writing to it fail on every run) and the path it holds in the outer
+# container is not mounted into this one. The time is therefore reported on stdout and
+# /entrypoint.sh of the outer container turns it into the output of the action. The
+# variable is still honored if it happens to be set, e.g. when this image is run
+# directly instead of through the action.
+reportTime () {
+	if [[ -n $GITHUB_OUTPUT ]]; then
+		echo "time=$1" >> "$GITHUB_OUTPUT"
+	fi
+	echo "GOBRA_ACTION_TIME=$1"
+}
+
 GOBRA_JAR="/gobra/gobra.jar"
 JAVA_ARGS="-Xss$INPUT_JAVAXSS -Xmx$INPUT_JAVAXMX -XX:-UseContainerSupport -Dcom.sun.management.jmxremote=false -jar $GOBRA_JAR"
 
@@ -242,7 +257,7 @@ if [[ $INPUT_CONFIGFILE ]]; then
 		else
 			echo -e "${RED}Failed to print the configuration resolved from the JSON config files${RESET}"
 		fi
-		echo "time=0" >> "$GITHUB_OUTPUT"
+		reportTime 0
 		exit $PRINT_CONFIG_EXIT_CODE
 	fi
 fi
@@ -278,7 +293,7 @@ fi
 
 TIME_PASSED=$(( SECONDS - START_TIME ))
 
-echo "time=$TIME_PASSED" >> "$GITHUB_OUTPUT"
+reportTime "$TIME_PASSED"
 
 echo "[DEBUG] Contents of /tmp/:" > $DEBUG_OUT
 ls -la /tmp/ > $DEBUG_OUT
