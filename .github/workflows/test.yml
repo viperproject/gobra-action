@@ -11,6 +11,17 @@ on:
   pull_request: # run this workflow on every pull_request
 
 jobs:
+  shellcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Project
+        uses: actions/checkout@v3
+      # ShellCheck is pre-installed on the GitHub-hosted Ubuntu runners
+      - name: Check the shell scripts with ShellCheck
+        run: |
+          shellcheck --version
+          find . -name '*.sh' -print0 | xargs -0 -r shellcheck
+
   setup-and-test:
     runs-on: ubuntu-latest
     steps:

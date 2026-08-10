@@ -21,11 +21,11 @@ REPOSITORY_NAME=$(echo "$GITHUB_REPOSITORY" | awk -F / '{print $2}' | sed -e "s/
 # absolute path. Note: does not handle paths that contain a space.
 getFileListInDir () (
 	local LOCATION=$1
-	cd -- "$LOCATION"
+	cd -- "$LOCATION" || exit 1
 	# the tail of the list of arguments (i.e., the args without
 	# the function name and the first argument (LOCATION) are
 	# the list of paths to be processed.
-	echo "$(echo "${@:2}" | xargs realpath | tr '\n' ' ')"
+	echo "${@:2}" | xargs realpath | tr '\n' ' '
 )
 
 GOBRA_JAR="/gobra/gobra.jar"
@@ -65,7 +65,8 @@ elif [[ $INPUT_RESPECTFUNCTIONPREPERMAMOUNTS ]]; then
 fi
 
 if [[ $INPUT_FILES ]]; then
-	RESOLVED_PATHS="$(getFileListInDir $PROJECT_LOCATION $INPUT_FILES)"
+	# shellcheck disable=SC2086 # the input is a space-separated list of paths and must be split
+	RESOLVED_PATHS="$(getFileListInDir "$PROJECT_LOCATION" $INPUT_FILES)"
 	echo "[DEBUG] Project Location: $PROJECT_LOCATION" > $DEBUG_OUT
 	echo "[DEBUG] Input Files: $INPUT_FILES" > $DEBUG_OUT
 	echo "[DEBUG] Resolved Paths: $RESOLVED_PATHS" > $DEBUG_OUT
@@ -74,12 +75,14 @@ fi
 
 if [[ $INPUT_PACKAGES ]]; then
 	# INPUT_PACKAGES are paths to packages
-	RESOLVED_PATHS="$(getFileListInDir $PROJECT_LOCATION $INPUT_PACKAGES)"
+	# shellcheck disable=SC2086 # the input is a space-separated list of paths and must be split
+	RESOLVED_PATHS="$(getFileListInDir "$PROJECT_LOCATION" $INPUT_PACKAGES)"
 	GOBRA_ARGS="-p $RESOLVED_PATHS $GOBRA_ARGS"
 fi
 
 if [[ $INPUT_INCLUDEPATHS ]]; then
-	RESOLVED_PATHS=$(getFileListInDir $PROJECT_LOCATION $INPUT_INCLUDEPATHS)
+	# shellcheck disable=SC2086 # the input is a space-separated list of paths and must be split
+	RESOLVED_PATHS=$(getFileListInDir "$PROJECT_LOCATION" $INPUT_INCLUDEPATHS)
 	echo "[DEBUG] Project Location: $PROJECT_LOCATION" > $DEBUG_OUT
 	echo "[DEBUG] Include Paths: $INPUT_INCLUDEPATHS" > $DEBUG_OUT
 	echo "[DEBUG] Resolved Paths: $RESOLVED_PATHS" > $DEBUG_OUT
@@ -232,9 +235,10 @@ EXIT_CODE=0
 
 CMD="java $JAVA_ARGS $GOBRA_ARGS"
 
-echo $CMD
+echo "$CMD"
 
-timeout $INPUT_TIMEOUT $CMD
+# shellcheck disable=SC2086 # the command is assembled as a string and must be split into arguments
+timeout "$INPUT_TIMEOUT" $CMD
 EXIT_CODE=$?
 
 if [ $EXIT_CODE -eq 0 ]; then
@@ -243,7 +247,7 @@ if [ $EXIT_CODE -eq 0 ]; then
 	# put it in the expected place
 	if [[ $INPUT_STATSFILE ]]; then
 		if [[ -f /tmp/stats.json ]]; then
-			mv /tmp/stats.json $STATS_TARGET
+			mv /tmp/stats.json "$STATS_TARGET"
 		else
 			echo -e "${YELLOW}Warning: Gobra did not generate a stats file${RESET}"
 		fi
@@ -257,15 +261,15 @@ else
 	fi
 fi
 
-TIME_PASSED=$[ $SECONDS-$START_TIME ]
+TIME_PASSED=$(( SECONDS - START_TIME ))
 
-echo "time=$TIME_PASSED" >> $GITHUB_OUTPUT
+echo "time=$TIME_PASSED" >> "$GITHUB_OUTPUT"
 
 echo "[DEBUG] Contents of /tmp/:" > $DEBUG_OUT
 ls -la /tmp/ > $DEBUG_OUT
 echo "[DEBUG] Contents of /gobra/:" > $DEBUG_OUT
 ls -la /gobra/ > $DEBUG_OUT
 echo "[DEBUG] Contents of $STATS_TARGET:" > $DEBUG_OUT
-ls -la $STATS_TARGET > $DEBUG_OUT
+ls -la "$STATS_TARGET" > $DEBUG_OUT
 
 exit $EXIT_CODE
