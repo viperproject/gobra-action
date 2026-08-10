@@ -1,11 +1,13 @@
 #!/bin/bash
 
-DEBUG_MODE=0
+# set the `DEBUG_MODE` environment variable of the workflow step to 1 to see the
+# debug output; the outer entrypoint passes the variable on to this container
+DEBUG_MODE=${DEBUG_MODE:-0}
 
 if [[ $DEBUG_MODE -eq 1 ]]; then
 	DEBUG_OUT="/dev/stdout"
 else
-	DEBUG_OUT="/dev/nil"
+	DEBUG_OUT="/dev/null"
 fi
 
 RED='\033[0;31m'
