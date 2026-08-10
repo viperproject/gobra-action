@@ -35,7 +35,8 @@ EXIT_CODE=$(cat "$RUN_STATUS")
 # the exit code is missing if the container was killed before it could be written
 [ -n "$EXIT_CODE" ] || EXIT_CODE=1
 
-TIME_PASSED=$(sed -n 's/^GOBRA_ACTION_TIME=//p' "$RUN_LOG" | tail -n 1)
+# the line that `reportTime` of the inner entrypoint prints
+TIME_PASSED=$(sed -n 's/^Gobra action: verification took \([0-9]*\)s$/\1/p' "$RUN_LOG" | tail -n 1)
 if [ -n "$TIME_PASSED" ] && [ -n "$GITHUB_OUTPUT" ]; then
   echo "time=$TIME_PASSED" >> "$GITHUB_OUTPUT"
 fi
