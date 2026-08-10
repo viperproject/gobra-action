@@ -225,15 +225,30 @@ if [[ $INPUT_CONFIGFILE ]]; then
 	GOBRA_ARGS="$GOBRA_ARGS --config $CONFIG_PATH"
 fi
 
-# Gobra reports an error if this is used without `--config`
-if [[ $INPUT_PRINTCONFIG -eq 1 ]]; then
-	GOBRA_ARGS="$GOBRA_ARGS --printConfig"
+CMD="java $JAVA_ARGS $GOBRA_ARGS"
+
+# In config file mode, the configuration that Gobra resolves from the JSON files is always
+# printed before verifying, so that the options a run actually uses show up in the log.
+# `--printConfig` makes Gobra exit without verifying anything, so this requires its own run.
+# It happens before the verification time is measured, so that it is not accounted for.
+if [[ $INPUT_CONFIGFILE ]]; then
+	# shellcheck disable=SC2086 # the command is assembled as a string and must be split into arguments
+	timeout "$INPUT_TIMEOUT" $CMD --printConfig
+	PRINT_CONFIG_EXIT_CODE=$?
+
+	if [ $PRINT_CONFIG_EXIT_CODE -ne 0 ]; then
+		if [ $PRINT_CONFIG_EXIT_CODE -eq 124 ]; then
+			echo -e "${RED}Printing the configuration resolved from the JSON config files timed out${RESET}"
+		else
+			echo -e "${RED}Failed to print the configuration resolved from the JSON config files${RESET}"
+		fi
+		echo "time=0" >> "$GITHUB_OUTPUT"
+		exit $PRINT_CONFIG_EXIT_CODE
+	fi
 fi
 
 START_TIME=$SECONDS
 EXIT_CODE=0
-
-CMD="java $JAVA_ARGS $GOBRA_ARGS"
 
 echo "$CMD"
 

@@ -68,15 +68,7 @@ The inputs that do not configure Gobra itself keep working: `javaXss` and `javaX
 
 Caching is not available in this mode, since Gobra's JSON config has no field for `--cacheFile` either and the Action does not work around it. Setting `caching` next to `configFile` therefore fails the step.
 
-To inspect the configuration that Gobra resolves from the JSON files without verifying anything, set `printConfig: '1'`:
-
-```yaml
-- name: Print the resolved configuration
-  uses: viperproject/gobra-action@main
-  with:
-    configFile: 'go/pkg'
-    printConfig: '1'
-```
+Before verifying, the Action always runs Gobra once with `--printConfig`, so that the configuration resolved from the JSON files appears in the log of the step. If that run fails, the step fails without verifying anything.
 
 ### Storing artifacts
 
