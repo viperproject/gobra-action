@@ -260,7 +260,6 @@ if [[ $INPUT_CONFIGFILE ]]; then
 		else
 			echo -e "${RED}Failed to print the configuration resolved from the JSON config files${RESET}"
 		fi
-		echo -e "${RED}Nothing was verified, so the action reports no time${RESET}"
 		exit $PRINT_CONFIG_EXIT_CODE
 	fi
 fi
